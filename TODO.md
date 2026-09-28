@@ -275,8 +275,8 @@ and an "only phase A" toggle that shows a pulsating (not rotating) field. Everyt
 
 ## Phase 13: Audio  (≈ 1.5 h)
 
-- [ ] WebAudio graph from §12: motor whine (6·f_e and 12·f_e harmonics), inverter hiss, gear mesh whine, roller rumble, limiter
-- [ ] Audio follows real time (not slow-mo); starts after a user gesture; off by default; mute state in the URL
+- [x] WebAudio graph from §12: motor whine (6·f_e and 12·f_e harmonics), inverter hiss, gear mesh whine, roller rumble, limiter
+- [x] Audio follows real time (not slow-mo); starts after a user gesture; off by default; mute state in the URL
 
 ---
 

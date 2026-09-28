@@ -10,6 +10,7 @@
 import './ui/styles.css';
 import './ui/ui.css';
 import { Color, FogExp2, Scene } from 'three';
+import { createAudio } from '@/audio/audio';
 import { THEME } from '@/config/theme';
 import { fmt } from '@/physics/format';
 import { createKinematics } from '@/physics/kinematics';
@@ -129,6 +130,12 @@ const tour = createTour({
   host: uiRoot,
 });
 actions.bindTour(tour.toggle);
+const audio = createAudio();
+store.subscribe(
+  (s) => s.sound,
+  (on) => audio.setEnabled(on),
+  true,
+);
 sim.onPresetEnded(() => store.set({ preset: 'none' }));
 let derated = false;
 sim.onLaunchTime((t) => layout.toast.show(`0–100 km/h in <strong>${fmt(t, 1)} s</strong>`));
@@ -155,6 +162,7 @@ if (import.meta.env.DEV) {
       labels,
       chartCard,
       tour,
+      audio,
     },
   });
 }
@@ -214,6 +222,7 @@ function frame(dt: number): void {
   post.render(dt);
   layout.update(dt, snapshot, kin.slowMoLabel, angles.lapsGained);
   chartCard.update(snapshot, angles, ui, dt, performance.now() / 1000);
+  audio.update(snapshot);
   if (snapshot.derate < 1 !== derated) {
     derated = snapshot.derate < 1;
     if (derated)
