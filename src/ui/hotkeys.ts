@@ -76,6 +76,11 @@ export function installHotkeys(
       case 'c':
         actions.cycleChart();
         break;
+      case 'Enter':
+        if (tag === 'BUTTON' || tag === 'A') return; // Enter activates the focused control
+        actions.toggleTour();
+        e.preventDefault();
+        break;
       case 'n':
         actions.toggleSound();
         break;

@@ -9,6 +9,8 @@ import type { Preset } from '@/physics/types';
 export type FollowMode = 'all' | 'field' | 'power' | 'heat';
 export type ViewMode = 'whole' | 'cutaway' | 'exploded';
 export type ChartTab = 'map' | 'scope' | 'losses' | 'run';
+/** camera chips (§3.8); null once the visitor orbits away */
+export type CamChip = 'stator' | 'rotor' | 'inverter' | 'wheels';
 
 export interface UiState {
   follow: FollowMode;
@@ -27,6 +29,8 @@ export interface UiState {
   sound: boolean;
   helpOpen: boolean;
   tourStep: number | null;
+  /** the camera chip the view came from (URL `cam`) */
+  cam: CamChip | null;
   /** debug: hide housing and inverter lid to inspect the motor (dev key H in Phase 3) */
   debugHousing: boolean;
 }
@@ -47,6 +51,7 @@ export function defaultUiState(): UiState {
     sound: false,
     helpOpen: false,
     tourStep: null,
+    cam: null,
     debugHousing: false,
   };
 }

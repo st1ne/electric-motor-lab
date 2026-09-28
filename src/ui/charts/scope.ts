@@ -17,6 +17,8 @@ const WINDOW = 2 * TAU;
 const N = 160;
 /** V_max sits at this fraction of the current axis */
 const V_LEVEL = 0.9;
+/** current axis steps, A */
+const SCALES = [100, 200, 500, 1000] as const;
 
 /** Real-time duration of one of the 8 divisions, as text. */
 export function divText(omegaE: number): string {
@@ -30,6 +32,7 @@ export function createScope(): ChartView {
   const xs = new Float64Array(N + 1);
   const ys = new Float64Array(N + 1);
   for (let i = 0; i <= N; i++) xs[i] = (i / N) * 720;
+  let iAxis = 1000;
 
   return {
     describe({ s }) {
@@ -39,12 +42,16 @@ export function createScope(): ChartView {
       );
     },
     draw(c: ChartCanvas, { s, angles, ui }) {
-      const iAxis = (s.motor === 'pm' ? PM.currentMaxA : IM.currentMaxA) * 1.1;
+      // autoscale in steps with hysteresis, so small cruise currents still read as sines
+      const iMax = (s.motor === 'pm' ? PM.currentMaxA : IM.currentMaxA) * 1.1;
+      const need = Math.hypot(s.id, s.iq) * 1.25;
+      const want = SCALES.find((a) => a >= need) ?? iMax;
+      if (want > iAxis || want < iAxis * 0.4) iAxis = Math.min(want, iMax);
       c.begin({
         x: { min: 0, max: 720 },
         y: { min: -iAxis, max: iAxis },
         xTicks: [0, 90, 180, 270, 360, 450, 540, 630, 720],
-        yTicks: [-500, 0, 500],
+        yTicks: [-iAxis / 2, 0, iAxis / 2].map((v) => Math.round(v)),
         xFormat: () => '',
         yFormat: (v) => fmt(v),
         xTitle: divText(s.omegaE),

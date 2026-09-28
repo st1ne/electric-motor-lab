@@ -143,9 +143,7 @@ export function createControlPanel(store: Store<UiState>, actions: Actions): Con
   });
   const row4 = h('div.row-split', {}, motor.el, slow.el, view.el);
 
-  const tourBtn = iconButton('Guided tour', 'Enter', ICONS.play, () => {});
-  tourBtn.disabled = true;
-  tourBtn.title = 'Guided tour (coming soon)';
+  const tourBtn = iconButton('Guided tour', 'Enter', ICONS.play, actions.toggleTour);
   const freezeBtn = iconButton('Freeze field', 'Space', ICONS.pause, actions.toggleFreeze);
   const soundBtn = iconButton('Sound', 'N', ICONS.mute, actions.toggleSound);
   const helpBtn = iconButton('Help', 'H', ICONS.help, () => actions.setHelp(!store.get().helpOpen));

@@ -40,10 +40,13 @@ import { createViews } from '@/scene/views';
 import { createActions } from '@/state/actions';
 import { createStore } from '@/state/store';
 import { defaultUiState } from '@/state/uiState';
+import { installUrlSync, readUrlState } from '@/state/urlState';
+import { createTour } from '@/tour/tour';
 import { createChartCard } from '@/ui/chartCard';
 import { createDevOverlay } from '@/ui/devOverlay';
 import { installHotkeys } from '@/ui/hotkeys';
 import { createLayout } from '@/ui/layout';
+import { setShareUrlProvider } from '@/ui/share';
 import { smoothstep } from '@/util/math';
 import { createRafLoop } from '@/util/rafLoop';
 
@@ -58,10 +61,12 @@ const uiRoot = document.getElementById('ui-root') as HTMLElement;
 // ---- physics ----
 const mapsFile = mapsJson as unknown as MapsFile;
 const maps = { pm: createMapLookup(mapsFile.motors.pm), im: createMapLookup(mapsFile.motors.im) };
-const store = createStore(defaultUiState());
+const fromUrl = readUrlState(window.location.search);
+const store = createStore({ ...defaultUiState(), ...fromUrl });
 const sim = createSim(maps);
 sim.setSpeedKmh(START_KMH);
-sim.setPreset('cruise', START_KMH);
+const startPreset = store.get().preset;
+sim.setPreset(startPreset, startPreset === 'cruise' ? START_KMH : undefined);
 const kin = createKinematics();
 
 // ---- scene ----
@@ -111,6 +116,19 @@ const devKeys: Record<string, () => void> = import.meta.env.DEV
   ? { b: () => store.set({ debugHousing: !store.get().debugHousing }) }
   : {};
 installHotkeys(store, actions, layout.panel.brake, devKeys);
+const urlSync = installUrlSync(store);
+setShareUrlProvider(urlSync.flush);
+cameraRig.onUserInput(() => store.set({ cam: null }));
+const startCam = store.get().cam;
+if (startCam) cameraRig.flyTo(startCam, 0);
+const tour = createTour({
+  store,
+  sim,
+  actions,
+  onCameraInput: (cb) => cameraRig.onUserInput(cb),
+  host: uiRoot,
+});
+actions.bindTour(tour.toggle);
 sim.onPresetEnded(() => store.set({ preset: 'none' }));
 let derated = false;
 sim.onLaunchTime((t) => layout.toast.show(`0–100 km/h in <strong>${fmt(t, 1)} s</strong>`));
@@ -136,6 +154,7 @@ if (import.meta.env.DEV) {
       maps,
       labels,
       chartCard,
+      tour,
     },
   });
 }
@@ -186,6 +205,7 @@ function frame(dt: number): void {
     ? smoothstep(VISUAL_CAP_RAD, 4 * VISUAL_CAP_RAD, Math.abs(snapshot.omegaM))
     : 0;
 
+  tour.update(dt);
   views.update(ctx);
   cameraRig.update(dt);
   for (const m of modules) m.update(ctx);

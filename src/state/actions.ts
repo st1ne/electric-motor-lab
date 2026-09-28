@@ -8,14 +8,16 @@ import type { Sim } from '@/physics/sim';
 import type { Preset } from '@/physics/types';
 import type { CameraPreset, CameraRig } from '@/scene/cameraRig';
 import type { Store } from '@/state/store';
-import type { ChartTab, FollowMode, UiState, ViewMode } from '@/state/uiState';
+import type { CamChip, ChartTab, FollowMode, UiState, ViewMode } from '@/state/uiState';
 
 export const VIEWS: readonly ViewMode[] = ['whole', 'cutaway', 'exploded'];
 export const CHARTS: readonly ChartTab[] = ['map', 'scope', 'losses', 'run'];
 export const FOLLOWS: readonly FollowMode[] = ['all', 'field', 'power', 'heat'];
+export const CHIPS: readonly CamChip[] = ['stator', 'rotor', 'inverter', 'wheels'];
 
 export interface Actions {
-  setPreset(p: Preset): void;
+  /** start a drive preset; `cruiseKmh` sets the Cruise target (default 110 km/h) */
+  setPreset(p: Preset, cruiseKmh?: number): void;
   setThrottle(u: number): void;
   nudgeThrottle(delta: number): void;
   setBrake(b: number): void;
@@ -38,14 +40,19 @@ export interface Actions {
   toggleSound(): void;
   setHelp(open: boolean): void;
   flyTo(cam: CameraPreset): void;
+  /** start or stop the guided tour (Enter, ▶) */
+  toggleTour(): void;
+  /** main.ts hands the tour in once it exists */
+  bindTour(toggle: () => void): void;
 }
 
 export function createActions(store: Store<UiState>, sim: Sim, rig: CameraRig): Actions {
   const clamp01 = (x: number): number => Math.min(Math.max(x, 0), 1);
+  let tourToggle: (() => void) | null = null;
   const a: Actions = {
-    setPreset(p) {
+    setPreset(p, cruiseKmh) {
       store.set({ preset: p, throttle: 0 });
-      sim.setPreset(p);
+      sim.setPreset(p, cruiseKmh);
     },
     setThrottle(u) {
       // moving the throttle cancels any preset (§3.4)
@@ -115,6 +122,13 @@ export function createActions(store: Store<UiState>, sim: Sim, rig: CameraRig): 
     },
     flyTo(cam) {
       rig.flyTo(cam);
+      store.set({ cam: CHIPS.includes(cam as CamChip) ? (cam as CamChip) : null });
+    },
+    toggleTour() {
+      tourToggle?.();
+    },
+    bindTour(toggle) {
+      tourToggle = toggle;
     },
   };
   return a;

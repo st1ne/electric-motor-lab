@@ -264,10 +264,10 @@ and an "only phase A" toggle that shows a pulsating (not rotating) field. Everyt
 
 ## Phase 12: Tour, chips, URL, share  (≈ 2 h)
 
-- [ ] `tour/steps.ts` + `tour.ts`: 6 steps (§11), caption bar, Resume pill
-- [ ] `chips.ts`: 4 camera chips (§3.8)
-- [ ] `urlState.ts` (§16), `share.ts`
-- [ ] `{BRAND}` and `{HANDLE}` in one config file
+- [x] `tour/steps.ts` + `tour.ts`: 6 steps (§11), caption bar, Resume pill
+- [x] `chips.ts`: 4 camera chips (§3.8)
+- [x] `urlState.ts` (§16), `share.ts`
+- [x] `{BRAND}` and `{HANDLE}` in one config file
 
 **Done when:** the tour runs end to end in ≈ 50 s; a shared URL restores motor, view, follow, slow-mo and camera.
 
