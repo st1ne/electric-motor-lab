@@ -11,7 +11,7 @@ import { GEOMETRY } from '@/config/motor';
 import { PALETTE } from '@/config/theme';
 import { mergeStatic } from '@/scene/mergeStatic';
 import { makeMaterial } from '@/scene/materials';
-import { disposeTree, type FrameContext, type SceneModule } from '@/scene/module';
+import { disposeTree, type SceneModule } from '@/scene/module';
 import { annulusShape, extrudeAxial } from '@/scene/motor/profile';
 
 const G = GEOMETRY;
@@ -124,9 +124,8 @@ export function createHousing(): Housing {
     quarters,
     endCap,
     driveFlange,
-    update(ctx: FrameContext) {
-      // the non-drive end cap comes off in the Cutaway so the end turns show (Phase 7 animates it)
-      endCap.visible = ctx.ui.view === 'whole';
+    update() {
+      // quarters, end cap and flange are placed by scene/views.ts
     },
     dispose: () => disposeTree(group),
   };

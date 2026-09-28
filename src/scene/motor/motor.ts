@@ -45,7 +45,6 @@ export function createMotor(initial: MotorKind): Motor {
     windings,
     rotors,
     update(ctx: FrameContext) {
-      housing.object3d.visible = !ctx.ui.debugHousing;
       parts.forEach((p) => p.update(ctx));
     },
     dispose() {

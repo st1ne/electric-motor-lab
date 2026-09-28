@@ -8,16 +8,19 @@ import { Group } from 'three';
 import { MODEL_SCALE, type MotorKind } from '@/config/motor';
 import { createBattery } from '@/scene/environment/battery';
 import { createDyno } from '@/scene/environment/dyno';
-import { createDifferential } from '@/scene/drivetrain/differential';
+import { createDifferential, type Differential } from '@/scene/drivetrain/differential';
 import { createHalfShafts } from '@/scene/drivetrain/halfShafts';
-import { createReduction, outputAngle } from '@/scene/drivetrain/reduction';
+import { createReduction, outputAngle, type Reduction } from '@/scene/drivetrain/reduction';
 import { createWheels } from '@/scene/drivetrain/wheels';
-import { createInverter } from '@/scene/inverter/inverter';
+import { createInverter, type Inverter } from '@/scene/inverter/inverter';
 import { disposeTree, type FrameContext, type SceneModule } from '@/scene/module';
 import { createMotor, type Motor } from '@/scene/motor/motor';
 
 export interface Rig extends SceneModule<Group> {
   readonly motor: Motor;
+  readonly inverter: Inverter;
+  readonly reduction: Reduction;
+  readonly differential: Differential;
 }
 
 export function createRig(initialMotor: MotorKind): Rig {
@@ -29,11 +32,12 @@ export function createRig(initialMotor: MotorKind): Rig {
   const differential = createDifferential(() => reduction.ringAngle);
   const halfShafts = createHalfShafts();
   const wheels = createWheels();
+  const inverter = createInverter();
   const modules: SceneModule[] = [
     createDyno(),
     createBattery(),
     motor,
-    createInverter(),
+    inverter,
     reduction,
     differential,
     halfShafts,
@@ -43,6 +47,9 @@ export function createRig(initialMotor: MotorKind): Rig {
   return {
     object3d: group,
     motor,
+    inverter,
+    reduction,
+    differential,
     update(ctx: FrameContext) {
       const wheelAngle = outputAngle(ctx.mechAngle);
       differential.setWheelAngles(wheelAngle, wheelAngle);

@@ -12,7 +12,6 @@ import { makeMaterial } from '@/scene/materials';
 import { disposeTree, type FrameContext, type SceneModule } from '@/scene/module';
 import { createBusbars, FLOOR_Y, INV } from '@/scene/inverter/busbars';
 import { createSwitches } from '@/scene/inverter/switches';
-import { approach } from '@/util/math';
 
 const [SX, SY, SZ] = INV.size;
 
@@ -78,16 +77,11 @@ export function createInverter(): Inverter {
   group.add(switches.object3d);
 
   mergeStatic(group, [lid, switches.object3d]);
-  let lidOpen = 1;
   return {
     object3d: group,
     lid,
     update(ctx: FrameContext) {
-      switches.update(ctx);
-      const target = ctx.ui.view === 'whole' && !ctx.ui.debugHousing ? 0 : 1;
-      lidOpen += (target - lidOpen) * approach(ctx.dt, 0.15);
-      lid.position.y = SY / 2 + 0.004 + lidOpen * 0.16;
-      lid.visible = lidOpen < 0.98;
+      switches.update(ctx); // the lid is lifted by scene/views.ts
     },
     dispose: () => disposeTree(group),
   };

@@ -25,20 +25,18 @@ import { createRoom } from '@/scene/environment/room';
 import { createRuler } from '@/scene/environment/ruler';
 import { createScopeScreens } from '@/scene/environment/scopeScreens';
 import { createLights } from '@/scene/lights';
-import { setCut } from '@/scene/materials';
 import type { FrameContext, SceneModule } from '@/scene/module';
-import { MOTOR_POS } from '@/scene/motor/motor';
 import { createPost } from '@/scene/post';
 import { createRenderer, MAX_DPR } from '@/scene/renderer';
 import { createRig } from '@/scene/rig';
-import { toModel } from '@/scene/units';
+import { createViews } from '@/scene/views';
 import { createActions } from '@/state/actions';
 import { createStore } from '@/state/store';
 import { defaultUiState } from '@/state/uiState';
 import { createDevOverlay } from '@/ui/devOverlay';
 import { installHotkeys } from '@/ui/hotkeys';
 import { createLayout } from '@/ui/layout';
-import { approach, smoothstep } from '@/util/math';
+import { smoothstep } from '@/util/math';
 import { createRafLoop } from '@/util/rafLoop';
 
 /** Visual speed cap in Real slow-mo (§5.5): 2.5 rev/s. */
@@ -81,11 +79,8 @@ const modules: SceneModule[] = [
 ];
 modules.forEach((m) => scene.add(m.object3d));
 
-// quarter cutaway through the motor axis (world units)
-const AXIS_Y = toModel(MOTOR_POS[1]);
-const AXIS_Z = toModel(MOTOR_POS[2]);
-let cutOpen = store.get().view === 'whole' ? 0 : 1;
-setCut(AXIS_Y, AXIS_Z, cutOpen);
+const views = createViews(driveRig);
+scene.add(views.object3d);
 
 // ---- UI ----
 const actions = createActions(store, sim, cameraRig);
@@ -160,10 +155,7 @@ const loop = createRafLoop((dt) => {
     ? smoothstep(VISUAL_CAP_RAD, 4 * VISUAL_CAP_RAD, Math.abs(snapshot.omegaM))
     : 0;
 
-  const cutTarget = ui.view === 'whole' ? 0 : 1;
-  cutOpen += (cutTarget - cutOpen) * approach(dt, 0.25);
-  setCut(AXIS_Y, AXIS_Z, cutOpen < 0.002 ? 0 : cutOpen);
-
+  views.update(ctx);
   cameraRig.update(dt);
   for (const m of modules) m.update(ctx);
   renderer.info.reset();

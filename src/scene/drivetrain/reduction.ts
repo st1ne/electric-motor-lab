@@ -123,6 +123,9 @@ export interface Reduction extends SceneModule<Group> {
   readonly cover: Mesh;
   /** current ring-gear (differential carrier) angle, rad */
   readonly ringAngle: number;
+  readonly perimeter: Mesh;
+  readonly backPlate: Mesh;
+  readonly intermediateShaft: Mesh;
   readonly gears: { z1: Mesh; z2: Mesh; z3: Mesh; z4: Mesh };
 }
 
@@ -194,6 +197,9 @@ export function createReduction(): Reduction {
   return {
     object3d: group,
     cover,
+    perimeter,
+    backPlate,
+    intermediateShaft: iShaft,
     gears: { z1, z2, z3, z4 },
     get ringAngle() {
       return z4.rotation.x;
@@ -206,9 +212,7 @@ export function createReduction(): Reduction {
       z3.rotation.x = th2 + off3;
       iShaft.rotation.x = th2;
       z4.rotation.x = -(Z.z3 / Z.z4) * th2 + off4;
-      cover.visible = ctx.ui.view === 'whole' && !ctx.ui.debugHousing;
-      perimeter.visible = !ctx.ui.debugHousing;
-      backPlate.visible = !ctx.ui.debugHousing;
+      // casing pieces are placed and shown by scene/views.ts
     },
     dispose: () => disposeTree(group),
   };

@@ -190,11 +190,11 @@ Match the reference look (dark glass, white active pill, dim mono hotkey hints).
 
 ## Phase 7: Views: Whole / Cutaway / Exploded  (≈ 3 h)
 
-- [ ] Quarter cutaway with 2 clipping planes through the shaft axis (the wedge facing the camera), animated 0.9 s (§8)
-- [ ] Stencil caps: hatched fill, violet edge; BackSide fallback behind a flag
-- [ ] Exploded: radial shells, rotor slides out, inverter lifts, gearbox splits; 60 ms stagger; dashed guide lines
-- [ ] Label visibility per view; hotkey V; URL `view`
-- [ ] Cutaway is the default view
+- [x] Quarter cutaway with 2 clipping planes through the shaft axis (the wedge facing the camera), animated 0.9 s (§8)
+- [x] Section caps: hatched fill, violet edge (back-face caps in the cut shader instead of a stencil pass)
+- [x] Exploded: radial shells, rotor slides out, inverter lifts, gearbox splits; 60 ms stagger; dashed guide lines
+- [~] Label visibility per view (Phase 11); hotkey V done; URL `view` (Phase 12)
+- [x] Cutaway is the default view
 
 **Done when:** no pops, no cap gaps, the rotor and field animate during transitions.
 

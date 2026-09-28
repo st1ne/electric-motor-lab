@@ -9,6 +9,7 @@
  */
 import {
   Color,
+  DoubleSide,
   MeshPhysicalMaterial,
   MeshStandardMaterial,
   Plane,
@@ -67,10 +68,39 @@ export interface MaterialOptions {
   cut?: boolean;
 }
 
+/**
+ * Section caps (§8) without a stencil pass: cut materials render double-sided, and a back face
+ * can only be seen through the cut opening of a closed mesh, so back faces are painted as the
+ * cap: a dark screen-space hatch. Front faces within CAP_EDGE of a cut plane (on the removed
+ * side of the other plane) get the violet edge line. s_i > 0 means "clipped by plane i", exactly
+ * as three.js's clipping_planes_fragment tests it.
+ */
+export const CAP_EDGE = 0.0005;
+const CAP_CHUNK = /* glsl */ `
+  #if NUM_CLIPPING_PLANES == 2 && UNION_CLIPPING_PLANES == 0
+  {
+    float sA = dot(vClipPosition, clippingPlanes[0].xyz) - clippingPlanes[0].w;
+    float sB = dot(vClipPosition, clippingPlanes[1].xyz) - clippingPlanes[1].w;
+    if (!gl_FrontFacing) {
+      float stripe = step(mod(gl_FragCoord.x + gl_FragCoord.y, 9.0), 1.6);
+      gl_FragColor = vec4(mix(vec3(0.075, 0.085, 0.11), vec3(0.2, 0.22, 0.28), stripe), 1.0);
+    }
+    float onA = (1.0 - smoothstep(0.0, ${CAP_EDGE.toFixed(5)}, abs(sA))) * step(-${CAP_EDGE.toFixed(5)}, sB);
+    float onB = (1.0 - smoothstep(0.0, ${CAP_EDGE.toFixed(5)}, abs(sB))) * step(-${CAP_EDGE.toFixed(5)}, sA);
+    gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.72, 0.58, 1.0) * 0.95, max(onA, onB));
+  }
+  #endif
+  #include <dithering_fragment>`;
+
 function finish<T extends MeshStandardMaterial>(m: T, system: SystemTag, o: MaterialOptions): T {
   const prev = m.onBeforeCompile.bind(m);
   m.onBeforeCompile = (shader, renderer) => {
     prev(shader, renderer);
+    if (o.cut)
+      shader.fragmentShader = shader.fragmentShader.replace(
+        '#include <dithering_fragment>',
+        CAP_CHUNK,
+      );
     injectDim(shader, system);
   };
   m.userData.system = system;
@@ -78,6 +108,7 @@ function finish<T extends MeshStandardMaterial>(m: T, system: SystemTag, o: Mate
     m.clippingPlanes = CUT_PLANES;
     m.clipIntersection = true;
     m.clipShadows = true;
+    m.side = DoubleSide;
   }
   return m;
 }
