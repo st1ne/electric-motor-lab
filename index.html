@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Electric Motor Lab: Why the Rotor Chases the Field</title>
+    <meta
+      name="description"
+      content="Slow time down 1,000× inside an EV drive unit and watch three sine waves of current build a rotating magnetic field that drags the rotor around. Magnet vs induction, field weakening and regen, all from a real physics model."
+    />
+    <meta property="og:title" content="Electric Motor Lab: Why the Rotor Chases the Field" />
+    <meta
+      property="og:description"
+      content="An interactive 3D chassis-dyno lab: the rotating field, magnet vs induction rotors, field weakening and regen braking."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@700;800&display=swap"
+    />
+  </head>
+  <body>
+    <canvas
+      id="scene"
+      role="img"
+      aria-label="3D chassis dynamometer with an electric drive unit: motor, inverter, gearbox and wheels on rollers"
+    ></canvas>
+    <div id="ui-root"></div>
+    <noscript>
+      <div class="noscript">
+        <h1>Electric Motor Lab: Why the Rotor Chases the Field</h1>
+        <p>
+          An electric car's motor has three coils, 120° apart. Feed them three sine-wave currents,
+          each a third of a cycle late, and their magnetic fields add up to a single field that
+          turns smoothly around the motor, even though no coil moves. A magnet rotor locks onto
+          that field and turns with it. An induction rotor has no magnets: it must always lag
+          the field slightly (the slip), because only that lag induces the currents the field can
+          pull on.
+        </p>
+        <p>This interactive lab needs JavaScript and WebGL.</p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

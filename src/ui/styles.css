@@ -1,0 +1,115 @@
+/* Design tokens (TECH_SPEC §3.2). Mirrored in src/config/theme.ts for three.js. */
+:root {
+  --bg: #0a0d18;
+  --panel: rgba(13, 17, 30, 0.72);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --panel-blur: 18px;
+  --text: #e8ecf5;
+  --text-muted: #8b93a7;
+  --text-dim: #5d6479;
+  --phase-a: #ff6b6b; /* phase A coil, trace, label */
+  --phase-b: #ffd166; /* phase B */
+  --phase-c: #4cc9ff; /* phase C */
+  --field: #b794ff; /* rotating field arrow, flux lines (violet) */
+  --power: #ffb547; /* drive power flow (amber) */
+  --regen: #5be49b; /* regen power flow, battery charging (green) */
+  --heat: #ff7a3d; /* losses, temperature */
+  --alarm: #ff4d5e; /* derate, limits */
+  --radius-panel: 14px;
+  --radius-btn: 9px;
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-ui: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --gutter: 24px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  outline: none;
+}
+
+#ui-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+#ui-root > * {
+  pointer-events: auto;
+}
+
+.glass {
+  background: var(--panel);
+  backdrop-filter: blur(var(--panel-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--panel-blur)) saturate(140%);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-panel);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.headline {
+  font-family: var(--font-display);
+  font-weight: 800;
+  background: linear-gradient(90deg, #c4b5fd, #7dd3fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.phase-a {
+  color: var(--phase-a);
+}
+.phase-b {
+  color: var(--phase-b);
+}
+.phase-c {
+  color: var(--phase-c);
+}
+
+:focus-visible {
+  outline: 2px solid var(--field);
+  outline-offset: 2px;
+}
+
+.noscript {
+  max-width: 640px;
+  margin: 15vh auto;
+  padding: 0 16px;
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
