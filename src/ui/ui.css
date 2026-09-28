@@ -400,7 +400,7 @@
 }
 .corner {
   position: absolute;
-  right: var(--gutter);
+  left: var(--gutter);
   bottom: var(--gutter);
   display: flex;
   gap: 8px;
@@ -863,6 +863,10 @@
   .chart-card.open {
     width: 360px;
   }
+  /* chips keep only their names, so they clear the Share / Follow row bottom-left */
+  .chip span {
+    display: none;
+  }
   .chart-tab {
     padding: 4px 5px;
     font-size: 10.5px;
@@ -890,9 +894,20 @@
     width: 100%;
     border-radius: var(--radius-panel) var(--radius-panel) 0 0;
   }
-  .chips,
-  .corner {
+  .chips {
     display: none;
+  }
+  /* the bottom sheet owns the bottom edge: Share / Follow sit top-right, beside the wordmark */
+  .corner {
+    left: auto;
+    right: 12px;
+    top: 10px;
+    bottom: auto;
+    gap: 6px;
+  }
+  .corner-btn {
+    padding: 5px 9px;
+    font-size: 11px;
   }
   /* bottom sheet: the peek holds presets, throttle and brake */
   .control-panel {

@@ -60,7 +60,7 @@ export function createBench(): SceneModule<Group> {
   ctx.fillStyle = '#f3dea0';
   ctx.textAlign = 'center';
   ctx.font = `600 54px ${UI_FONT}`;
-  ctx.fillText(`${BRAND.domain} / electric-motor`, 512, 112);
+  ctx.fillText(`${BRAND.handle} / electric-motor`, 512, 112);
   ctx.font = `500 40px ${MONO_FONT}`;
   ctx.fillText('200 kW class · 1:3', 512, 184);
   plate.texture.needsUpdate = true;

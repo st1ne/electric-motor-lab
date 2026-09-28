@@ -7,8 +7,9 @@ physics model in `src/physics`.
 
 - Spec: [`TECH_SPEC.md`](TECH_SPEC.md) · Build plan: [`TODO.md`](TODO.md)
 - Brand rule: the drive unit is a generic "200 kW class EV rear drive unit". Tesla may be
-  mentioned in explanatory text, but no Tesla logos, wordmarks or product replicas. `{BRAND}` and
-  `{HANDLE}` live in `src/config/brand.ts`.
+  mentioned in explanatory text, but no Tesla logos, wordmarks or product replicas. The wordmark
+  (@SolSt1ne), the Share link (reposts the launch post on X) and the Follow link live in
+  `src/config/brand.ts`.
 
 ## Run
 

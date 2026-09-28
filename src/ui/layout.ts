@@ -1,7 +1,7 @@
 /**
  * Screen regions (TECH_SPEC §3.1): brand and title block, stat cards, explanation panel and
  * the chart card (mounted by main.ts) in the left column; the control panel top right; camera chips
- * bottom centre; share and "Follow on X" bottom right; help, toasts and the loader on top.
+ * bottom centre; share and "Follow" bottom left; help, toasts and the loader on top.
  */
 import { BRAND } from '@/config/brand';
 import type { SimSnapshot } from '@/physics/types';
@@ -14,7 +14,6 @@ import { h } from '@/ui/dom';
 import { createExplainer } from '@/ui/explainer';
 import { createHelp } from '@/ui/help';
 import { createLoader, type Loader } from '@/ui/loader';
-import { shareLab } from '@/ui/share';
 import { createStatCards } from '@/ui/statCards';
 import { createToaster, type Toaster } from '@/ui/toast';
 
@@ -48,16 +47,16 @@ export function createLayout(root: HTMLElement, store: Store<UiState>, actions: 
   const column = h('div.left-col', {}, title, stats.el, explainer.el);
   const panel = createControlPanel(store, actions);
 
+  // Share reposts the launch post on X; Follow opens the profile
   const shareBtn = h(
-    'button.corner-btn.glass',
-    { type: 'button', 'aria-label': 'Share this lab' },
+    'a.corner-btn.glass',
+    { href: BRAND.shareUrl, target: '_blank', rel: 'noopener', 'aria-label': 'Share: repost on X' },
     'Share ↗',
   );
-  shareBtn.addEventListener('click', () => void shareLab(toast));
   const follow = h(
     'a.corner-btn.glass',
-    { href: `https://x.com/${BRAND.handle}`, target: '_blank', rel: 'noopener' },
-    'Follow on X',
+    { href: BRAND.handleUrl, target: '_blank', rel: 'noopener' },
+    `Follow ${BRAND.handle}`,
   );
   const corner = h('div.corner', {}, shareBtn, follow);
 

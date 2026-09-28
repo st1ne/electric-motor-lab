@@ -47,7 +47,6 @@ import { createChartCard } from '@/ui/chartCard';
 import { createDevOverlay } from '@/ui/devOverlay';
 import { installHotkeys } from '@/ui/hotkeys';
 import { createLayout } from '@/ui/layout';
-import { setShareUrlProvider } from '@/ui/share';
 import { smoothstep } from '@/util/math';
 import { createRafLoop } from '@/util/rafLoop';
 
@@ -117,8 +116,7 @@ const devKeys: Record<string, () => void> = import.meta.env.DEV
   ? { b: () => store.set({ debugHousing: !store.get().debugHousing }) }
   : {};
 installHotkeys(store, actions, layout.panel.brake, devKeys);
-const urlSync = installUrlSync(store);
-setShareUrlProvider(urlSync.flush);
+installUrlSync(store);
 cameraRig.onUserInput(() => store.set({ cam: null }));
 const startCam = store.get().cam;
 if (startCam) cameraRig.flyTo(startCam, 0);
