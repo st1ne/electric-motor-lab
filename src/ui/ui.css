@@ -563,6 +563,70 @@
   color: var(--text-dim);
 }
 
+/* ---- chart card (§3.6, §10.3) ---- */
+.chart-card {
+  padding: 10px 12px 10px;
+  flex: none;
+}
+.chart-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.chart-head .hint {
+  margin-left: auto;
+}
+.chart-tabs {
+  display: flex;
+  gap: 2px;
+}
+.chart-tab {
+  white-space: nowrap;
+  border: 0;
+  background: none;
+  padding: 4px 7px;
+  border-radius: 6px;
+  font: 500 11px/1 var(--font-ui);
+  color: var(--text);
+  opacity: 0.6;
+  cursor: pointer;
+  transition:
+    opacity 0.2s var(--ease-out),
+    background 0.2s var(--ease-out);
+}
+.chart-tab:hover {
+  opacity: 1;
+}
+.chart-tab.on {
+  background: #f4f6fb;
+  color: #0b0f1a;
+  opacity: 1;
+  font-weight: 600;
+}
+.chart-canvas,
+.meter-canvas {
+  display: block;
+}
+.chart-canvas.fade-in {
+  animation: chart-fade 0.25s var(--ease-out);
+}
+@keyframes chart-fade {
+  from {
+    opacity: 0.25;
+  }
+}
+.meters {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--panel-border);
+}
+.chart-toggle {
+  display: none;
+}
+
 /* ---- responsive (§15; the full mobile bottom sheet lands in Phase 15) ---- */
 @media (max-width: 1279px) {
   .left-col {
@@ -573,6 +637,29 @@
   }
   .control-panel {
     width: 460px;
+  }
+  .chart-toggle {
+    display: inline-block;
+    border: 0;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font: 600 11px/1 var(--font-ui);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .chart-card:not(.open) .chart-canvas,
+  .chart-card:not(.open) .chart-tabs,
+  .chart-card:not(.open) .meters,
+  .chart-card .chart-head .hint {
+    display: none;
+  }
+  .chart-card.open {
+    width: 360px;
+  }
+  .chart-tab {
+    padding: 4px 5px;
+    font-size: 10.5px;
   }
 }
 @media (max-width: 899px) {

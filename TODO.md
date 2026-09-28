@@ -242,14 +242,14 @@ and an "only phase A" toggle that shows a pulsating (not rotating) field. Everyt
 
 ## Phase 10: Charts and gauges  (≈ 3 h)
 
-- [ ] `chartBase.ts`: DPR canvas, axes, grid, mono ticks, theme colors
-- [ ] `torqueSpeedMap.ts`: drive and regen envelopes, efficiency heat map with contours (from the build-time maps), base-speed marker, live dot with 5 s trail, cross-fade on motor swap
-- [ ] `scope.ts` ★: i_a/i_b/i_c over 2 periods in display time, synced cursor, voltage-limit line, real-time scale readout
-- [ ] `lossesBar.ts`: stacked losses and efficiency
-- [ ] `runChart.ts`: speed vs time with the 0–100 highlight
-- [ ] `voltageGauge.ts`: |v| vs V_max with the ghost no-load back-EMF needle (§10.3)
-- [ ] `vectorInset.ts`: dq plane with the current circle, voltage ellipse and the moving operating point (§10.3)
-- [ ] Wall screens mirror the scope and the torque–speed map
+- [x] `chartBase.ts`: DPR canvas, axes, grid, mono ticks, theme colors
+- [x] `torqueSpeedMap.ts`: drive and regen envelopes, efficiency heat map with contours (from the build-time maps), base-speed marker, live dot with 5 s trail, cross-fade on motor swap
+- [x] `scope.ts` ★: i_a/i_b/i_c over 2 periods in display time, synced cursor, voltage-limit line, real-time scale readout
+- [x] `lossesBar.ts`: stacked losses and efficiency
+- [x] `runChart.ts`: speed vs time with the 0–100 highlight
+- [x] `voltageGauge.ts`: |v| vs V_max with the ghost no-load back-EMF needle (§10.3)
+- [x] `vectorInset.ts`: dq plane with the current circle, voltage ellipse and the moving operating point (§10.3)
+- [x] Wall screens mirror the scope and the torque–speed map
 
 **Done when:** at Top speed, the gauge and the dq inset clearly show field weakening kicking in near 9,000 rpm.
 

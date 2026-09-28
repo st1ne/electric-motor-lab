@@ -38,6 +38,7 @@ import { createViews } from '@/scene/views';
 import { createActions } from '@/state/actions';
 import { createStore } from '@/state/store';
 import { defaultUiState } from '@/state/uiState';
+import { createChartCard } from '@/ui/chartCard';
 import { createDevOverlay } from '@/ui/devOverlay';
 import { installHotkeys } from '@/ui/hotkeys';
 import { createLayout } from '@/ui/layout';
@@ -79,7 +80,6 @@ const modules: SceneModule[] = [
   createBench(),
   createRuler(),
   createProps(),
-  createScopeScreens(maps),
   driveRig,
 ];
 modules.forEach((m) => scene.add(m.object3d));
@@ -98,6 +98,11 @@ modules.push(fieldFx, powerFlow, oilJets, heat, createFollow());
 // ---- UI ----
 const actions = createActions(store, sim, cameraRig);
 const layout = createLayout(uiRoot, store, actions);
+const chartCard = createChartCard(store, maps);
+layout.column.append(chartCard.el);
+const screens = createScopeScreens(chartCard.views);
+scene.add(screens.object3d);
+modules.push(screens);
 const devKeys: Record<string, () => void> = import.meta.env.DEV
   ? { b: () => store.set({ debugHousing: !store.get().debugHousing }) }
   : {};
@@ -136,6 +141,7 @@ function resize(): void {
   renderer.setPixelRatio(dpr);
   renderer.setSize(w, h, false);
   post.resize(w, h, dpr);
+  chartCard.resize(Math.min(window.devicePixelRatio || 1, 2));
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
 }
@@ -180,6 +186,7 @@ function frame(dt: number): void {
   renderer.info.reset();
   post.render(dt);
   layout.update(dt, snapshot, kin.slowMoLabel, angles.lapsGained);
+  chartCard.update(snapshot, angles, ui, dt, performance.now() / 1000);
   if (snapshot.derate < 1 !== derated) {
     derated = snapshot.derate < 1;
     if (derated)

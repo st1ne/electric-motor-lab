@@ -1,6 +1,6 @@
 /**
  * Screen regions (TECH_SPEC §3.1): brand and title block, stat cards, explanation panel and
- * (Phase 10) the chart card in the left column; the control panel top right; camera chips
+ * the chart card (mounted by main.ts) in the left column; the control panel top right; camera chips
  * bottom centre; share and "Follow on X" bottom right; help, toasts and the loader on top.
  */
 import { BRAND } from '@/config/brand';
@@ -22,7 +22,7 @@ export interface Layout {
   readonly panel: ControlPanel;
   readonly toast: Toaster;
   readonly loader: Loader;
-  /** the left column, where the chart card mounts in Phase 10 */
+  /** the left column; main.ts mounts the chart card here */
   readonly column: HTMLElement;
   update(dt: number, s: SimSnapshot, slowMoLabel: number, laps: number): void;
 }
