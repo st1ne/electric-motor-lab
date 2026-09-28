@@ -304,10 +304,10 @@ and an "only phase A" toggle that shows a pulsating (not rotating) field. Everyt
 ## Phase 16: QA and launch  (≈ 2 h)
 
 - [ ] Run the §18 acceptance checklist, item by item
-- [ ] Traceability table in README: every on-screen number → physics function
-- [ ] Brand check: no logos, wordmarks or product replicas
+- [x] Traceability table in README: every on-screen number → physics function
+- [x] Brand check: no logos, wordmarks or product replicas (Tesla only in the help's history note)
 - [ ] Lighthouse: Perf ≥ 85, A11y ≥ 95, BP ≥ 95
-- [ ] OG image (Field mode, Cutaway, ×1000), meta tags, favicon, noscript
+- [x] OG image (Field mode, Cutaway, ×1000), meta tags, favicon, noscript (the OG render used fallback fonts; re-shoot with Outfit loaded)
 - [ ] Deploy (Vercel / Netlify / Cloudflare Pages)
 - [ ] Record a 20–30 s capture for the launch post: slow-mo field → Launch → swap to Induction (slip) → Top speed (field weakening) → Regen
 

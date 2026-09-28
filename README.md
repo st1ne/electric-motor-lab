@@ -84,26 +84,48 @@ torque on the shaft, which is why a coasting magnet motor slows the car.
 - **Rotation:** every rotating part derives its angle from one visual rotor angle. In slow motion
   that is the display-time angle. In Real mode it is capped at 2.5 rev/s, with blur discs.
 
+## Visuals and UI
+
+- **Follow modes** (`scene/follow.ts`): each mode animates the shared `uDim` uniform of the mesh
+  systems it is not about over 400 ms. Field shows the field arrow, gap arrows, flux ribbons and
+  the hologram (`scene/fx/fieldFx.ts`); Power the pulses from the battery to the wheels and the
+  loss puffs (`scene/fx/powerFlow.ts`); Heat the temperature ramp on the windings and
+  magnets/cage (`scene/fx/heat.ts`) and the oil jets (`scene/fx/oilJets.ts`).
+- **Charts** (`ui/chartCard.ts`): Torque–speed map, Scope, Losses and Run, plus the voltage gauge
+  and the dq inset. The wall screens draw the same scope and map views.
+- **Labels** (`scene/labels.ts`, `scene/labelDefs.ts`): the §3.7 table, projected DOM pills with
+  occlusion, priority collision and 200 ms fades.
+- **Tour** (`tour/`): six steps, about 51 s. **URL** (`state/urlState.ts`): motor, view, follow,
+  preset, thr, slow, chart, cam, sound. **Audio** (`audio/audio.ts`): synthesized, off by default.
+
+## Traceability: every on-screen number → physics
+
+| On screen | Snapshot field | Computed in |
+|---|---|---|
+| MOTOR rpm, Rotor label | `rpm` | `sim.ts` from `vehicle.motorOmega(v)` |
+| km/h, Wheel rpm | `kmh`, `wheelRpm` | `sim.ts` vehicle state, `vehicle.wheelRpm` |
+| TORQUE, torque–speed dot | `tMotor`, `tShaft`, `tWheel` | `maps.ts` lookup clamped to `envelope.ts`; drag in `losses.ts` |
+| POWER, efficiency | `pShaft`, `pDc`, `eff` | `sim.ts` power balance (`pDc = pEm + losses`) |
+| Phase A/B/C currents, scope traces | `angles.ia/ib/ic` | `kinematics.ts` from `id`, `iq` and the display angle |
+| Field frequency, slow-mo tail | `omegaE` | `sim.ts` (IM: includes slip) |
+| Load angle | `loadAngle` | `sim.ts`, atan2(−v_d, v_q) |
+| Slip, bar current | `slip`, `barCurrentA` | `sim.ts` (§6.3, `IM.kBar`) |
+| Voltage gauge, V max line | `vMag`, `vMax` | `maps.ts` v_d, v_q; `config/motor.voltageMaxV(vDc)` |
+| Ghost needle | `emfNoLoad` | `sim.ts`, p · ω_m · ψ_m (reaches V_max = 208 V at ≈ 9,000 rpm) |
+| dq inset point | `id`, `iq` | `maps.ts` (build-time `operatingPoint.solve`) |
+| Voltage ellipse | `vMax`, `omegaE` | `ui/vectorInset.ts` from `PM`/`IM` inductances |
+| Losses bar, loss puffs | `losses.*` | `losses.ts`, `maps.ts`; gearbox in `sim.ts` |
+| Efficiency map | map `eff` field | `scripts/build-maps.ts` → `maps.generated.json` |
+| Winding / magnet °C, derate | `tWinding`, `tRotor`, `derate` | `thermal.ts` |
+| Battery V · A, SoC | `vDc`, `iDc`, `soc` | `battery.ts` |
+| Coast drag W | `dragPmW`, `dragImW` | `sim.ts` zero-current points at this speed |
+| 0–100 time | `launchTime` | `driver.ts` launch preset |
+
 ## Status
 
-Phases 0–4 are done (scaffold, physics reference and port, scene shell, motor geometry, inverter
-and drivetrain). Modules not built yet throw `not implemented`.
+Phases 0–15 are done; see [`TODO.md`](TODO.md) for the few open items (adaptive DPR, lazy maps,
+browser matrix, Lighthouse, deploy, launch capture).
 
-Temporary dev hotkeys until the Phase 5 UI:
-
-| Key | Action |
-|---|---|
-| Q W E R T | Launch / Cruise / Top speed / Regen / Coast |
-| ↑ / ↓ | Pedal throttle ±5 % |
-| S (hold) | Brake |
-| M | Magnet ↔ Induction |
-| V | Whole / Cutaway / Exploded (Exploded is Phase 7; it currently looks like Cutaway) |
-| , / . | Slow-mo slower / faster |
-| Space | Freeze the field visuals |
-| O | Only phase A |
-| 1–4 | Follow mode (sets the magnet tint only for now) |
-| B | "Bare" motor: housing hidden (Phase 3 debug view) |
-| C | Cycle camera presets |
-| ` | Stats and snapshot overlay |
-
-In dev builds, `window.__lab` exposes the sim, scene and camera.
+In dev builds, `window.__lab` exposes the sim, scene, camera, store, actions, labels, chart card,
+tour and audio; `window.__lab.tick(dt, n)` steps frames by hand while the tab is hidden. The dev
+key B hides the housing, and backtick toggles the stats overlay.
