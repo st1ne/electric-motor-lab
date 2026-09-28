@@ -275,7 +275,8 @@ export interface Sim {
   readonly driver: DriverState;
   /** advance by real time dtReal (fixed sub-steps, max 40 per call) */
   step(dtReal: number, inputs: SimInputs): void;
-  setPreset(preset: Preset): void;
+  /** start a drive preset; Cruise optionally with its own target (default 110 km/h) */
+  setPreset(preset: Preset, cruiseKmh?: number): void;
   /** jump the dyno to a speed (used by presets and the tour) */
   setSpeedKmh(kmh: number): void;
   snapshot(): SimSnapshot;
@@ -320,8 +321,8 @@ export function createSim(maps: MotorMaps, soc: number = BATTERY.socDefault): Si
       }
       if (n === SIM_MAX_SUBSTEPS) acc = 0; // drop the backlog instead of spiralling
     },
-    setPreset(preset) {
-      const jump = startPreset(driver, preset, st.t, st.v * 3.6);
+    setPreset(preset, cruiseKmh) {
+      const jump = startPreset(driver, preset, st.t, st.v * 3.6, cruiseKmh);
       if (jump !== null) sim.setSpeedKmh(jump);
     },
     setSpeedKmh(kmh) {

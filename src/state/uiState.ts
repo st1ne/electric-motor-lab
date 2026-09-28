@@ -1,6 +1,6 @@
 /**
  * UI state (TECH_SPEC §13.3): everything the visitor controls.
- * The store (Phase 5) wraps this; until then main.ts mutates a plain object.
+ * Held in the observable store (state/store.ts); changed only through state/actions.ts.
  */
 import type { MotorKind } from '@/config/motor';
 import type { SlowMoSetting } from '@/physics/kinematics';
@@ -25,6 +25,7 @@ export interface UiState {
   chart: ChartTab;
   onlyPhaseA: boolean;
   sound: boolean;
+  helpOpen: boolean;
   tourStep: number | null;
   /** debug: hide housing and inverter lid to inspect the motor (dev key H in Phase 3) */
   debugHousing: boolean;
@@ -43,6 +44,7 @@ export function defaultUiState(): UiState {
     chart: 'scope',
     onlyPhaseA: false,
     sound: false,
+    helpOpen: false,
     tourStep: null,
     debugHousing: false,
   };

@@ -23,7 +23,7 @@ export function createDevOverlay(root: HTMLElement): DevOverlay {
   Object.assign(el.style, {
     position: 'fixed',
     left: '8px',
-    top: '8px',
+    bottom: '8px',
     maxHeight: 'calc(100vh - 16px)',
     overflow: 'hidden',
     margin: '0',

@@ -155,13 +155,13 @@ Use InstancedMesh for all repeated parts. English comments.
 
 ## Phase 5: UI shell  (≈ 3 h)
 
-- [ ] Layout regions (§3.1), title block, intro
-- [ ] Components: segmented, slider, hold-button (brake), icon buttons
-- [ ] `controlPanel.ts`: Follow, Drive presets, Throttle + Brake, Motor, Slow-mo, View, icons (§3.4)
-- [ ] `statCards.ts`: MOTOR / TORQUE / POWER with tweened tabular numbers and mode-dependent sub-lines (§3.3)
-- [ ] `explainer.ts` + `templates.ts` ★: **all** regime templates from §3.5, colored concept words, the slow-mo tail sentence
-- [ ] `hotkeys.ts` (§3.9), `help.ts` (hotkeys, assumptions: peak vs RMS, stylized field, generic drive unit, Nikola Tesla's 1888 induction-motor patent note), `toast.ts`, `loader.ts` (stator ring lighting up)
-- [ ] `store.ts` + `uiState.ts`
+- [x] Layout regions (§3.1), title block, intro
+- [x] Components: segmented, slider, hold-button (brake), icon buttons
+- [x] `controlPanel.ts`: Follow, Drive presets, Throttle + Brake, Motor, Slow-mo, View, icons (§3.4)
+- [x] `statCards.ts`: MOTOR / TORQUE / POWER with tweened tabular numbers and mode-dependent sub-lines (§3.3)
+- [x] `explainer.ts` + `templates.ts` ★: **all** regime templates from §3.5, colored concept words, the slow-mo tail sentence
+- [x] `hotkeys.ts` (§3.9), `help.ts` (hotkeys, assumptions: peak vs RMS, stylized field, generic drive unit, Nikola Tesla's 1888 induction-motor patent note), `toast.ts`, `loader.ts` (stator ring lighting up)
+- [x] `store.ts` + `uiState.ts`
 
 **Done when:** every control drives the sim; Launch records a 0–100 time and shows the toast; the texts switch correctly through Launch → Cruise → Top speed → Regen → Coast.
 
@@ -177,12 +177,12 @@ Match the reference look (dark glass, white active pill, dim mono hotkey hints).
 
 ## Phase 6: Wiring, slow motion and presets  (≈ 2 h)
 
-- [ ] `main.ts`: store → sim → kinematics → scene → UI → audio stub
-- [ ] Slow-mo modes Auto / ×100 / ×1000 / ×10000 / Real with the log-space auto adjustment and readable snapping (§6.6)
-- [ ] Freeze (Space) stops display time only
-- [ ] Presets with the driver model (§6.9); throttle input cancels presets
-- [ ] Throttles: text 10 Hz, charts 30 Hz, wall screens 10 Hz
-- [ ] Dev overlay: snapshot + display angles JSON
+- [x] `main.ts`: store → sim → kinematics → scene → UI → audio stub
+- [x] Slow-mo modes Auto / ×100 / ×1000 / ×10000 / Real with the log-space auto adjustment and readable snapping (§6.6)
+- [x] Freeze (Space) stops display time only
+- [x] Presets with the driver model (§6.9); throttle input cancels presets
+- [x] Throttles: text 10 Hz, wall screens 10 Hz (charts 30 Hz arrive with Phase 10)
+- [x] Dev overlay: snapshot + display angles JSON
 
 **Done when:** Launch at ×1000 shows the rotor and field accelerating smoothly while the car does a real-time 0–100; freeze stops the field but the km/h keeps climbing.
 

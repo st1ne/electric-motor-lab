@@ -2,7 +2,7 @@
  * Driver model and drive presets (TECH_SPEC §3.4, §6.9).
  *   Pedal: T_cmd = u · T_max(ω). Brake: requested deceleration 0.4 g · b.
  *   Launch: brake to a stop if moving, then u = 1; release at 100 km/h and record the time.
- *   Cruise: PI speed hold at 110 km/h (Kp 0.15 per km/h, Ki 0.02), conditional-integration
+ *   Cruise: PI speed hold (110 km/h preset, 60 km/h default state) (Kp 0.15 per km/h, Ki 0.02), conditional-integration
  *           anti-windup (the integrator only runs while the output is unsaturated).
  *   Top speed: u = 1 until the limiter.  Regen: 0.25 g until 0 (from 120 km/h below 20 km/h).
  *   Coast: u = 0, b = 0.
@@ -17,6 +17,8 @@ export interface DriverState {
   launchPhase: 'stopping' | 'running';
   launchStartT: number;
   cruiseInt: number;
+  /** Cruise target, km/h */
+  cruiseKmh: number;
 }
 
 export interface DriverCommand {
@@ -25,16 +27,29 @@ export interface DriverCommand {
 }
 
 export function createDriverState(): DriverState {
-  return { preset: 'none', launchPhase: 'running', launchStartT: 0, cruiseInt: 0 };
+  return {
+    preset: 'none',
+    launchPhase: 'running',
+    launchStartT: 0,
+    cruiseInt: 0,
+    cruiseKmh: DRIVER.cruiseKmh,
+  };
 }
 
 /**
  * Activate a preset at time t and speed kmh. Returns a speed (km/h) the dyno should jump to
  * first, or null: Regen below 20 km/h restarts from 120 km/h (§3.4).
  */
-export function startPreset(d: DriverState, preset: Preset, t: number, kmh: number): number | null {
+export function startPreset(
+  d: DriverState,
+  preset: Preset,
+  t: number,
+  kmh: number,
+  cruiseKmh: number = DRIVER.cruiseKmh,
+): number | null {
   d.preset = preset;
   d.cruiseInt = 0;
+  d.cruiseKmh = cruiseKmh;
   d.launchPhase = kmh > 0.5 ? 'stopping' : 'running';
   d.launchStartT = t;
   return preset === 'regen' && kmh < DRIVER.regenMinKmh ? DRIVER.regenStartKmh : null;
@@ -78,7 +93,7 @@ export function driverCommand(
     case 'top':
       return { throttle: 1, brake: 0 };
     case 'cruise':
-      return { throttle: cruisePi(d, kmh, DRIVER.cruiseKmh), brake: 0 };
+      return { throttle: cruisePi(d, kmh, d.cruiseKmh), brake: 0 };
     case 'regen': {
       if (kmh <= 0) {
         d.preset = 'none';
