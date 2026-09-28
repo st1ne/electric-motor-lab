@@ -34,6 +34,8 @@ const BAR_CURRENT_FULL = 2600;
 export interface RotorIM extends SceneModule<Group> {
   /** materials that fade during the rotor swap */
   readonly fadeMaterials: readonly MeshStandardMaterial[];
+  /** materials the Heat mode tints with the rotor temperature */
+  readonly heatMaterials: readonly MeshStandardMaterial[];
 }
 
 export function createRotorIM(): RotorIM {
@@ -114,6 +116,7 @@ export function createRotorIM(): RotorIM {
   return {
     object3d: group,
     fadeMaterials: [lamMat, copperMat],
+    heatMaterials: [copperMat],
     update(ctx: FrameContext) {
       const s = ctx.snapshot;
       const k = s.motor === 'im' ? Math.min(s.barCurrentA / BAR_CURRENT_FULL, 1.2) : 0;

@@ -26,7 +26,10 @@ export interface Actions {
   stepSlowMo(dir: 1 | -1): void;
   setView(v: ViewMode): void;
   cycleView(): void;
-  /** entering Field also selects the Cutaway and the Scope chart (§10.1) unless `plain` */
+  /**
+   * Entering Field also selects the Cutaway and the Scope chart (§10.1), entering Heat the Losses
+   * chart (§9), unless `plain`.
+   */
   setFollow(f: FollowMode, plain?: boolean): void;
   setChart(c: ChartTab): void;
   cycleChart(): void;
@@ -82,6 +85,11 @@ export function createActions(store: Store<UiState>, sim: Sim, rig: CameraRig): 
       const s = store.get();
       if (f === 'field' && s.follow !== 'field' && !plain) {
         store.set({ follow: f, chart: 'scope', view: s.view === 'whole' ? 'cutaway' : s.view });
+        return;
+      }
+      // Heat is about where the losses go: it brings up the losses chart (§9)
+      if (f === 'heat' && s.follow !== 'heat' && !plain) {
+        store.set({ follow: f, chart: 'losses' });
         return;
       }
       store.set({ follow: f });

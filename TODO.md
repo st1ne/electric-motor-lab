@@ -229,12 +229,12 @@ and an "only phase A" toggle that shows a pulsating (not rotating) field. Everyt
 
 ## Phase 9: Power and heat visuals  (≈ 3 h)
 
-- [ ] `powerFlow.ts`: path battery → cable → inverter → bus bars → coils → shaft → gears → half-shafts → wheels; pulses amber (drive) / green reversed (regen), count and speed ∝ |P|
-- [ ] Loss "leaks": orange puffs at each component ∝ its loss (from the loss breakdown)
-- [ ] Battery cells glow amber/green; SoC fill bar
-- [ ] `heat.ts`: temperature color ramp on windings and magnets/cage (40 → 160 °C); derate warning
-- [ ] `oilJets.ts`: particles from the hollow shaft onto the end turns
-- [ ] Follow modes (`follow.ts`): `uDim` transitions, forced chart per mode (§9)
+- [x] `powerFlow.ts`: path battery → cable → inverter → bus bars → coils → shaft → gears → half-shafts → wheels; pulses amber (drive) / green reversed (regen), count and speed ∝ |P|
+- [x] Loss "leaks": orange puffs at each component ∝ its loss (from the loss breakdown)
+- [x] Battery cells glow amber/green; SoC fill bar
+- [x] `heat.ts`: temperature color ramp on windings and magnets/cage (40 → 160 °C); derate warning
+- [x] `oilJets.ts`: particles from the hollow shaft onto the end turns
+- [x] Follow modes (`follow.ts`): `uDim` transitions, forced chart per mode (§9)
 
 **Done when:** in Regen the pulses flip within 200 ms; 10 repeated launches visibly heat the windings and trigger DERATE.
 

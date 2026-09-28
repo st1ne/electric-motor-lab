@@ -87,6 +87,8 @@ function pocket(p: MagnetPose, grow: number): Path {
 export interface Rotor extends SceneModule<Group> {
   /** materials that fade during the rotor swap */
   readonly fadeMaterials: readonly MeshStandardMaterial[];
+  /** materials the Heat mode tints with the rotor temperature */
+  readonly heatMaterials: readonly MeshStandardMaterial[];
 }
 
 export function createRotorPM(): Rotor {
@@ -166,6 +168,7 @@ export function createRotorPM(): Rotor {
   return {
     object3d: group,
     fadeMaterials: [lamMat, plateMat, ...magMats],
+    heatMaterials: magMats,
     update(ctx: FrameContext) {
       const fieldMode = ctx.ui.follow === 'field' ? 1 : 0.35;
       magMats.forEach((mm) => (mm.emissiveIntensity = 0.35 * fieldMode));

@@ -29,6 +29,10 @@ import type { FrameContext, SceneModule } from '@/scene/module';
 import { createPost } from '@/scene/post';
 import { createRenderer, MAX_DPR } from '@/scene/renderer';
 import { createFieldFx } from '@/scene/fx/fieldFx';
+import { createHeat } from '@/scene/fx/heat';
+import { createOilJets } from '@/scene/fx/oilJets';
+import { createPowerFlow } from '@/scene/fx/powerFlow';
+import { createFollow } from '@/scene/follow';
 import { createRig } from '@/scene/rig';
 import { createViews } from '@/scene/views';
 import { createActions } from '@/state/actions';
@@ -83,7 +87,13 @@ modules.forEach((m) => scene.add(m.object3d));
 const views = createViews(driveRig);
 scene.add(views.object3d);
 const fieldFx = createFieldFx(driveRig, camera);
-modules.push(fieldFx);
+const powerFlow = createPowerFlow();
+driveRig.object3d.add(powerFlow.object3d);
+const oilJets = createOilJets();
+driveRig.motor.object3d.add(oilJets.object3d);
+// heat runs after the rig: it blends over the emissive the windings and rotors just set
+const heat = createHeat(driveRig.motor.windings.materials, driveRig.motor.rotorHeatMaterials);
+modules.push(fieldFx, powerFlow, oilJets, heat, createFollow());
 
 // ---- UI ----
 const actions = createActions(store, sim, cameraRig);
@@ -93,6 +103,7 @@ const devKeys: Record<string, () => void> = import.meta.env.DEV
   : {};
 installHotkeys(store, actions, layout.panel.brake, devKeys);
 sim.onPresetEnded(() => store.set({ preset: 'none' }));
+let derated = false;
 sim.onLaunchTime((t) => layout.toast.show(`0–100 km/h in <strong>${fmt(t, 1)} s</strong>`));
 const dev = import.meta.env.DEV ? createDevOverlay(uiRoot) : null;
 declare global {
@@ -169,6 +180,13 @@ function frame(dt: number): void {
   renderer.info.reset();
   post.render(dt);
   layout.update(dt, snapshot, kin.slowMoLabel, angles.lapsGained);
+  if (snapshot.derate < 1 !== derated) {
+    derated = snapshot.derate < 1;
+    if (derated)
+      layout.toast.show(
+        `Windings at <strong>${fmt(snapshot.tWinding, 0)} °C</strong>: torque derated`,
+      );
+  }
   dev?.frame(dt, renderer, snapshot, angles, kin.slowMoLabel);
   if (firstFrame) {
     firstFrame = false;

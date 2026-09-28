@@ -2,7 +2,7 @@
  * Motor assembly (TECH_SPEC §5.1–5.3): housing, stator, hairpin winding, the two swappable rotors
  * and the shaft, placed on the motor axis inside the 1:3 rig. Motor-local x is the machine axis.
  */
-import { Group } from 'three';
+import { Group, type MeshStandardMaterial } from 'three';
 import { RIG } from '@/config/environment';
 import type { MotorKind } from '@/config/motor';
 import { disposeTree, type FrameContext, type SceneModule } from '@/scene/module';
@@ -26,6 +26,8 @@ export interface Motor extends SceneModule<Group> {
   readonly housing: Housing;
   readonly windings: Windings;
   readonly rotors: RotorSwap;
+  /** magnets / cage materials of both rotors (Heat mode) */
+  readonly rotorHeatMaterials: readonly MeshStandardMaterial[];
 }
 
 export function createMotor(initial: MotorKind): Motor {
@@ -35,7 +37,9 @@ export function createMotor(initial: MotorKind): Motor {
   const housing = createHousing();
   const stator = createStator();
   const windings = createWindings(acTerminalsMotorLocal());
-  const rotors = createRotorSwap({ pm: createRotorPM(), im: createRotorIM() }, initial);
+  const rotorPM = createRotorPM();
+  const rotorIM = createRotorIM();
+  const rotors = createRotorSwap({ pm: rotorPM, im: rotorIM }, initial);
   const shaft = createShaft();
   const parts: SceneModule[] = [housing, stator, windings, rotors, shaft];
   parts.forEach((p) => group.add(p.object3d));
@@ -44,6 +48,7 @@ export function createMotor(initial: MotorKind): Motor {
     housing,
     windings,
     rotors,
+    rotorHeatMaterials: [...rotorPM.heatMaterials, ...rotorIM.heatMaterials],
     update(ctx: FrameContext) {
       parts.forEach((p) => p.update(ctx));
     },
