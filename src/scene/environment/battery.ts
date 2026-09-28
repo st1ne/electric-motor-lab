@@ -36,6 +36,28 @@ export function inverterDcInput(): Vector3 {
   return new Vector3(RIG.motorX - RIG.inverter.size[0] / 2, motorY + RIG.inverter.offsetY, motorZ);
 }
 
+const MODULE_W = COLS * PITCH + 0.04;
+
+/** Module terminal position (rig metres); dz offsets the + / − posts. */
+export function batteryTerminal(dz = 0): Vector3 {
+  const B = RIG.battery;
+  return new Vector3(B.x + MODULE_W / 2 + 0.02, B.standHeight + 0.07, B.z + dz);
+}
+
+/** Path of one HV cable from the module terminal to the inverter DC input (also the power path). */
+export function hvCableCurve(dz = 0): CatmullRomCurve3 {
+  const B = RIG.battery;
+  const end = inverterDcInput();
+  const start = batteryTerminal(dz);
+  return new CatmullRomCurve3([
+    start,
+    new Vector3(start.x + 0.14, B.standHeight + 0.08, B.z + 0.04 + dz),
+    new Vector3(-0.85, end.y - 0.12, 0.05 + dz),
+    new Vector3(end.x - 0.12, end.y, end.z + dz),
+    new Vector3(end.x, end.y, end.z + dz),
+  ]);
+}
+
 export function createBattery(): SceneModule<Group> {
   const group = new Group();
   group.name = 'battery';
@@ -155,20 +177,12 @@ export function createBattery(): SceneModule<Group> {
   group.add(fill);
 
   // HV cable pair (orange) from the module terminals to the inverter DC input
-  const end = inverterDcInput();
   const cableMat = makeMaterial(
     { color: PALETTE.hvOrange, roughness: 0.45, metalness: 0.05 },
     'power',
   );
   for (const dz of [-0.03, 0.03]) {
-    const start = new Vector3(B.x + w / 2 + 0.02, y0 + 0.07, B.z + dz);
-    const curve = new CatmullRomCurve3([
-      start,
-      new Vector3(start.x + 0.14, y0 + 0.08, B.z + 0.04 + dz),
-      new Vector3(-0.85, end.y - 0.12, 0.05 + dz),
-      new Vector3(end.x - 0.12, end.y, end.z + dz),
-      new Vector3(end.x, end.y, end.z + dz),
-    ]);
+    const curve = hvCableCurve(dz);
     const cable = new Mesh(new TubeGeometry(curve, 64, 0.011, 10, false), cableMat);
     cable.castShadow = true;
     group.add(cable);
