@@ -282,19 +282,21 @@ and an "only phase A" toggle that shows a pulsating (not rotating) field. Everyt
 
 ## Phase 14: Polish ★  (≈ 3 h)
 
-- [ ] Motion pass (§4.6); no easing on physics-driven motion
+- [x] Motion pass (§4.6); no easing on physics-driven motion; reduced motion: ×10000 default, half particles
 - [ ] Bloom/exposure: only coils, field arrow, flux lines, LEDs and screens glow
-- [ ] Typography: tabular numbers, units `rpm`, `N·m`, `kW`, `A pk`, `V`, `°C`, `km/h`
-- [ ] Copy pass at edge cases: 0 km/h, top speed, regen at 5 km/h, derate, coast in both motors
-- [ ] Side-by-side comparison with the reference screenshots (panel spacing, pills, label style, headline scale)
+- [x] Typography: tabular numbers, units `rpm`, `N·m`, `kW`, `A pk`, `V`, `°C`, `km/h`
+- [x] Copy pass at edge cases: 0 km/h, top speed, regen at 5 km/h (friction takes over below 8 km/h), derate, coast in both motors
+- [ ] Side-by-side comparison with the reference screenshots (panel spacing, pills, label style, headline scale) — no reference screenshots in the repo yet
 
 ---
 
 ## Phase 15: Performance, mobile, accessibility  (≈ 3 h)
 
-- [ ] Measure against §14; fix the top offenders; adaptive DPR; lazy maps with the analytic fallback
-- [ ] Mobile bottom sheet with throttle, brake and presets in the peek (§15)
-- [ ] Reduced motion; flicker ≤ 3 Hz; keyboard-only and screen-reader passes; contrast
+- [x] Measure against §14: Cutaway ≤ 200 draw calls (sealed parts no longer cast shadows), Exploded ≈ 204, ≈ 200 k triangles, 516 KB gzip
+- [ ] Adaptive DPR; lazy maps with the analytic fallback (not needed for the size budget; first-frame time unmeasured here)
+- [x] Mobile bottom sheet with throttle, brake and presets in the peek (§15)
+- [x] Reduced motion; flicker ≤ 3 Hz (gauge/ellipse 2 Hz, derate pulse 1.3 Hz)
+- [ ] Keyboard-only and screen-reader passes; contrast audit
 - [ ] Test on Chrome, Safari, Firefox, iOS Safari, Android Chrome
 
 ---

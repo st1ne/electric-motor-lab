@@ -93,26 +93,28 @@ export function createHologram(position: Vector3, scale: number): Hologram {
   // 54 slot marks in phase colours, glowing with |i_phase|
   const slotGeo = new PlaneGeometry(G.slotWidth * 1.1, G.slotDepth).rotateY(Math.PI / 2);
   slotGeo.translate(0, G.statorBoreR + G.slotDepth / 2, 0);
-  const slotMats = PHASE_COLORS.map(
-    (c) =>
-      new MeshBasicMaterial({
-        color: new Color(c),
-        transparent: true,
-        depthWrite: false,
-        blending: AdditiveBlending,
-        side: DoubleSide,
-        toneMapped: false,
-      }),
-  );
-  const m = new Matrix4();
-  slotMats.forEach((mat, ph) => {
-    const slots: number[] = [];
-    for (let k = 0; k < G.slots; k++) if (slotPhase(k).phase === ph) slots.push(k);
-    const inst = new InstancedMesh(slotGeo, mat, slots.length);
-    slots.forEach((k, i) => inst.setMatrixAt(i, m.makeRotationX(slotAngle(k))));
-    inst.renderOrder = 20;
-    face.add(inst);
+  // one draw: the phase colour and its glow ride in the instance colour (additive, so a dark
+  // colour is a dim slot)
+  const slotMat = new MeshBasicMaterial({
+    color: '#ffffff',
+    transparent: true,
+    depthWrite: false,
+    blending: AdditiveBlending,
+    side: DoubleSide,
+    toneMapped: false,
   });
+  const slotInst = new InstancedMesh(slotGeo, slotMat, G.slots);
+  const slotPh: number[] = [];
+  const m = new Matrix4();
+  for (let k = 0; k < G.slots; k++) {
+    slotInst.setMatrixAt(k, m.makeRotationX(slotAngle(k)));
+    slotPh.push(slotPhase(k).phase);
+  }
+  slotInst.setColorAt(0, new Color());
+  slotInst.renderOrder = 20;
+  face.add(slotInst);
+  const phaseCols = PHASE_COLORS.map((c) => new Color(c));
+  const slotCol = new Color();
 
   // rotor: outline plus magnet poles (6 alternating sectors) or 50 cage bars, turning with the rotor
   const rotor = new Group();
@@ -194,10 +196,16 @@ export function createHologram(position: Vector3, scale: number): Hologram {
       backdrop.material.opacity = 0.55 * fade;
       const iMax = s.motor === 'pm' ? PM.currentMaxA : IM.currentMaxA;
       const cur = [ctx.angles.ia, ctx.angles.ib, ctx.angles.ic];
-      slotMats.forEach((mat, ph) => {
+      slotMat.opacity = fade;
+      const glow = [0, 1, 2].map((ph) => {
         const i = ctx.ui.onlyPhaseA && ph > 0 ? 0 : Math.abs(cur[ph] ?? 0);
-        mat.opacity = fade * (0.12 + 0.88 * Math.min(i / iMax, 1) * f.visible);
+        return 0.12 + 0.88 * Math.min(i / iMax, 1) * f.visible;
       });
+      slotPh.forEach((ph, k) => {
+        slotCol.copy(phaseCols[ph] as Color).multiplyScalar(glow[ph] ?? 0);
+        slotInst.setColorAt(k, slotCol);
+      });
+      if (slotInst.instanceColor) slotInst.instanceColor.needsUpdate = true;
       rotor.rotation.x = f.rotorMech;
       pmGroup.visible = s.motor === 'pm';
       imGroup.visible = s.motor === 'im';

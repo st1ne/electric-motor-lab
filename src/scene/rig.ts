@@ -13,6 +13,7 @@ import { createHalfShafts } from '@/scene/drivetrain/halfShafts';
 import { createReduction, outputAngle, type Reduction } from '@/scene/drivetrain/reduction';
 import { createWheels } from '@/scene/drivetrain/wheels';
 import { createInverter, type Inverter } from '@/scene/inverter/inverter';
+import { trimShadows } from '@/scene/mergeStatic';
 import { disposeTree, type FrameContext, type SceneModule } from '@/scene/module';
 import { createMotor, type Motor } from '@/scene/motor/motor';
 
@@ -44,6 +45,11 @@ export function createRig(initialMotor: MotorKind): Rig {
     wheels,
   ];
   modules.forEach((m) => group.add(m.object3d));
+  // the motor's insides sit under the housing: their shadow passes are wasted draw calls (§14)
+  trimShadows(motor.object3d, [motor.housing.object3d]);
+  // likewise the gears and the differential inside the gearbox casing
+  trimShadows(reduction.object3d, [reduction.perimeter, reduction.backPlate, reduction.cover]);
+  trimShadows(differential.object3d);
   return {
     object3d: group,
     motor,

@@ -16,11 +16,13 @@ import {
 import { GEOMETRY } from '@/config/motor';
 import { PALETTE } from '@/config/theme';
 import { disposeTree, type FrameContext, type SceneModule } from '@/scene/module';
+import { prefersReducedMotion } from '@/util/easing';
 import { approach } from '@/util/math';
 
 const G = GEOMETRY;
 const HOLES = 8;
-const PER_HOLE = 6;
+/** §4.6: half the particles under reduced motion */
+const PER_HOLE = prefersReducedMotion() ? 3 : 6;
 const ENDS = [-0.075, 0.075] as const;
 const R0 = G.shaftBoreR;
 const R1 = 0.085;

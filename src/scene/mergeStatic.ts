@@ -58,3 +58,17 @@ export function mergeStatic(root: Object3D, keep: readonly Object3D[] = []): voi
     root.add(out);
   }
 }
+
+/**
+ * Shadow-pass trim (TECH_SPEC §14): every mesh under `root` except those under `keep` stops
+ * casting shadows. Used for parts sealed inside a caster (the motor's insides under the housing,
+ * the inverter's board under its case), whose shadow pass would cost a draw call each for a
+ * shadow nobody sees.
+ */
+export function trimShadows(root: Object3D, keep: readonly Object3D[] = []): void {
+  const keepSet = new Set<Object3D>();
+  keep.forEach((k) => k.traverse((o) => keepSet.add(o)));
+  root.traverse((o) => {
+    if (!keepSet.has(o)) o.castShadow = false;
+  });
+}

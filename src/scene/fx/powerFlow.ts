@@ -26,11 +26,14 @@ import { AXLE, INTERMEDIATE, MOTOR_AXIS } from '@/scene/drivetrain/reduction';
 import { INV, acTerminalLocal } from '@/scene/inverter/busbars';
 import { disposeTree, type FrameContext, type SceneModule } from '@/scene/module';
 import { MOTOR_POS } from '@/scene/motor/motor';
+import { prefersReducedMotion } from '@/util/easing';
 import { approach, mulberry32 } from '@/util/math';
 
 const FADE_TAU = 0.13;
-const MAX_PULSES = 64;
-const MAX_PUFFS = 90;
+/** §4.6: half the particles under reduced motion */
+const PARTICLES = prefersReducedMotion() ? 0.5 : 1;
+const MAX_PULSES = Math.round(64 * PARTICLES);
+const MAX_PUFFS = Math.round(90 * PARTICLES);
 /** |P| at which the flow is at full count and speed */
 const P_FULL_W = 150e3;
 const PUFF_LIFE_S = 0.9;
@@ -227,7 +230,7 @@ export function createPowerFlow(): SceneModule<Group> {
       // loss puffs
       if (puffLevel > 0.01) {
         sources.forEach((src, i) => {
-          const rate = Math.min(src.loss(ctx) / 600, 10); // puffs per second
+          const rate = PARTICLES * Math.min(src.loss(ctx) / 600, 10); // puffs per second
           acc[i] = (acc[i] ?? 0) + rate * dt;
           while ((acc[i] ?? 0) >= 1 && puffs.length < MAX_PUFFS) {
             acc[i] = (acc[i] ?? 0) - 1;

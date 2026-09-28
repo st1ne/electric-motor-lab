@@ -4,6 +4,7 @@
  * Every number comes from the SimSnapshot. Returns an HTML string (numbers only are interpolated).
  */
 import { IM, PM } from '@/config/motor';
+import { DRIVER } from '@/config/vehicle';
 import { fmt } from '@/physics/format';
 import type { SimSnapshot } from '@/physics/types';
 
@@ -55,12 +56,23 @@ export function renderTemplate(s: SimSnapshot): string {
         `current is what gets pulled. No lag, no current, no torque.`
       );
     }
-    case 'REGEN':
+    case 'REGEN': {
+      // below the fade speed the motor has too little speed to recover much: the pads take over
+      if (s.kmh < DRIVER.regenFadeKmh && s.frictionBrakeW > -s.pDc)
+        return (
+          `Almost stopped. Below ${b(`${fmt(DRIVER.regenFadeKmh)} km/h`)} there is too little ` +
+          `speed left to generate much, so the motor's braking fades out and the friction ` +
+          `brakes finish the stop (${b(`${kw(s.frictionBrakeW)} kW`)}).`
+        );
+      const pads =
+        s.frictionBrakeW < 500
+          ? 'The friction brakes stay off.'
+          : `The friction brakes handle only ${b(`${kw(s.frictionBrakeW)} kW`)}.`;
       return (
         `Braking with the motor. The rotor now runs ${b('ahead')} of the ${field}, so the motor ` +
-        `works as a generator: ${b(`${kw(-s.pDc)} kW`)} flows back into the battery. The ` +
-        `friction brakes handle only ${b(`${kw(s.frictionBrakeW)} kW`)}.`
+        `works as a generator: ${b(`${kw(-s.pDc)} kW`)} flows back into the battery. ${pads}`
       );
+    }
     case 'COAST_PM':
       return (
         `Coasting at ${b(`${kmh} km/h`)} with no current. The magnets still sweep past the steel ` +

@@ -149,15 +149,31 @@ export function createControlPanel(store: Store<UiState>, actions: Actions): Con
   const helpBtn = iconButton('Help', 'H', ICONS.help, () => actions.setHelp(!store.get().helpOpen));
   const icons = h('div.icon-row', {}, tourBtn, freezeBtn, soundBtn, helpBtn);
 
+  // < 900 px the panel is a bottom sheet (§15): the peek shows presets, throttle and brake; the
+  // handle opens the rest
+  const handle = h(
+    'button.sheet-handle',
+    { type: 'button', 'aria-expanded': 'false', 'aria-label': 'More controls' },
+    h('span', { 'aria-hidden': 'true' }),
+  );
+  follow.el.classList.add('sheet-more');
+  row4.classList.add('sheet-more');
+  icons.classList.add('sheet-more');
   const el = h(
     'section.panel.glass.control-panel',
     { 'aria-label': 'Controls' },
+    handle,
     follow.el,
     drive.el,
     pedals,
     row4,
     icons,
   );
+  handle.addEventListener('click', () => {
+    const open = !el.classList.contains('expanded');
+    el.classList.toggle('expanded', open);
+    handle.setAttribute('aria-expanded', String(open));
+  });
 
   store.subscribe((s) => s.follow, follow.set);
   store.subscribe((s) => s.preset, drive.set);

@@ -820,6 +820,10 @@
   display: none;
 }
 
+.sheet-handle {
+  display: none;
+}
+
 /* ---- responsive (§15; the full mobile bottom sheet lands in Phase 15) ---- */
 @media (max-width: 1279px) {
   .left-col {
@@ -830,6 +834,15 @@
   }
   .control-panel {
     width: 460px;
+  }
+  .stat {
+    padding: 8px 9px 8px;
+  }
+  .stat-value {
+    font-size: 17px;
+  }
+  .stat-unit {
+    font-size: 10px;
   }
   .chart-toggle {
     display: inline-block;
@@ -880,5 +893,55 @@
   .chips,
   .corner {
     display: none;
+  }
+  /* bottom sheet: the peek holds presets, throttle and brake */
+  .control-panel {
+    display: flex;
+    flex-direction: column;
+    padding-top: 4px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  .sheet-handle {
+    display: block;
+    align-self: center;
+    width: 64px;
+    height: 22px;
+    margin-bottom: 4px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .sheet-handle span {
+    display: block;
+    width: 40px;
+    height: 4px;
+    margin: 0 auto;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.28);
+  }
+  .control-panel:not(.expanded) .sheet-more {
+    display: none;
+  }
+  .control-panel .row.sheet-more {
+    order: 3;
+  }
+  .control-panel .icon-row {
+    order: 4;
+  }
+  .stat {
+    padding: 7px 8px;
+  }
+  .stat-value {
+    font-size: 16px;
+  }
+  .stat-sub {
+    display: none;
+  }
+  .hold {
+    width: 110px;
+    padding: 12px 0;
+    font-size: 14px;
   }
 }

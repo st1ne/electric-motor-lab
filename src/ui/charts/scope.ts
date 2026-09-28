@@ -6,7 +6,6 @@
  * dashed voltage-limit lines ±V_max, which it touches in field weakening.
  * Readout: `1 div = {x} ms real` (8 divisions over the two periods).
  */
-import { IM, PM } from '@/config/motor';
 import { PHASE_COLORS } from '@/config/theme';
 import { fmt } from '@/physics/format';
 import type { ChartCanvas } from '@/ui/charts/chartBase';
@@ -18,7 +17,7 @@ const N = 160;
 /** V_max sits at this fraction of the current axis */
 const V_LEVEL = 0.9;
 /** current axis steps, A */
-const SCALES = [100, 200, 500, 1000] as const;
+const SCALES = [100, 200, 500, 1000] as const; // ≥ 1.15 × I_max of both machines
 
 /** Real-time duration of one of the 8 divisions, as text. */
 export function divText(omegaE: number): string {
@@ -43,10 +42,10 @@ export function createScope(): ChartView {
     },
     draw(c: ChartCanvas, { s, angles, ui }) {
       // autoscale in steps with hysteresis, so small cruise currents still read as sines
-      const iMax = (s.motor === 'pm' ? PM.currentMaxA : IM.currentMaxA) * 1.1;
-      const need = Math.hypot(s.id, s.iq) * 1.25;
-      const want = SCALES.find((a) => a >= need) ?? iMax;
-      if (want > iAxis || want < iAxis * 0.4) iAxis = Math.min(want, iMax);
+      // (the top step covers either machine's current limit with headroom)
+      const need = Math.hypot(s.id, s.iq) * 1.15;
+      const want = SCALES.find((a) => a >= need) ?? 1000;
+      if (want > iAxis || want < iAxis * 0.4) iAxis = want;
       c.begin({
         x: { min: 0, max: 720 },
         y: { min: -iAxis, max: iAxis },

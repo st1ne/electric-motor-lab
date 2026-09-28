@@ -5,6 +5,7 @@
 import type { MotorKind } from '@/config/motor';
 import type { SlowMoSetting } from '@/physics/kinematics';
 import type { Preset } from '@/physics/types';
+import { prefersReducedMotion } from '@/util/easing';
 
 export type FollowMode = 'all' | 'field' | 'power' | 'heat';
 export type ViewMode = 'whole' | 'cutaway' | 'exploded';
@@ -44,7 +45,8 @@ export function defaultUiState(): UiState {
     preset: 'cruise',
     throttle: 0,
     brake: 0,
-    slowMo: 'auto',
+    // §4.6: reduced motion starts at the slowest step instead of Auto
+    slowMo: prefersReducedMotion() ? 10000 : 'auto',
     frozen: false,
     chart: 'scope',
     onlyPhaseA: false,
