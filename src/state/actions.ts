@@ -26,7 +26,8 @@ export interface Actions {
   stepSlowMo(dir: 1 | -1): void;
   setView(v: ViewMode): void;
   cycleView(): void;
-  setFollow(f: FollowMode): void;
+  /** entering Field also selects the Cutaway and the Scope chart (§10.1) unless `plain` */
+  setFollow(f: FollowMode, plain?: boolean): void;
   setChart(c: ChartTab): void;
   cycleChart(): void;
   toggleFreeze(): void;
@@ -77,7 +78,12 @@ export function createActions(store: Store<UiState>, sim: Sim, rig: CameraRig): 
       const i = VIEWS.indexOf(store.get().view);
       a.setView(VIEWS[(i + 1) % VIEWS.length] ?? 'cutaway');
     },
-    setFollow(f) {
+    setFollow(f, plain = false) {
+      const s = store.get();
+      if (f === 'field' && s.follow !== 'field' && !plain) {
+        store.set({ follow: f, chart: 'scope', view: s.view === 'whole' ? 'cutaway' : s.view });
+        return;
+      }
       store.set({ follow: f });
     },
     setChart(c) {

@@ -35,7 +35,7 @@ export function createProps(): SceneModule<Group> {
 
   // tool rack: pegboard with wrenches and screwdrivers
   const rack = new Group();
-  rack.position.set(-1.05, 0.55, backZ + 0.012);
+  rack.position.set(1.02, 0.5, backZ + 0.012);
   const board = new Mesh(
     new BoxGeometry(0.62, 0.42, 0.015),
     makeMaterial({ color: '#2b2f38', roughness: 0.8, metalness: 0.1 }, 'environment'),
@@ -162,7 +162,7 @@ export function createProps(): SceneModule<Group> {
     new TorusGeometry(0.06, 0.008, 8, 32),
     makeMaterial({ color: PALETTE.hvOrange, roughness: 0.5 }, 'environment'),
   );
-  coil.position.set(-0.85, 0.45, backZ + 0.03);
+  coil.position.set(1.22, 0.4, backZ + 0.03);
   group.add(coil);
 
   mergeStatic(group);

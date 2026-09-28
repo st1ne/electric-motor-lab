@@ -63,8 +63,8 @@ export const ENVIRONMENT = {
     near: 0.01,
     far: 40,
     /** 3/4 view of the motor from the output side, wheels behind (§4.5) */
-    position: [0.62, 0.42, 0.78] as const,
-    target: [-0.02, 0.17, 0.02] as const,
+    position: [0.6, 0.44, 0.82] as const,
+    target: [-0.03, 0.22, 0.02] as const,
     minPolarDeg: 15,
     maxPolarDeg: 85,
     minDistance: 0.18,

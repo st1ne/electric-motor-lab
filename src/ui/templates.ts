@@ -96,6 +96,22 @@ export function renderSlowMoTail(s: SimSnapshot, slowMo: number): string {
   );
 }
 
+/**
+ * Induction lap counter (§10.2): the field gains one lap on the cage every 1 / (s · f_sync)
+ * seconds (real time), i.e. S times longer on screen.
+ */
+export function renderLapCounter(s: SimSnapshot, slowMo: number, laps: number): string {
+  if (s.motor !== 'im' || Math.abs(s.slip) < 5e-4 || s.iPeak < 1) return '';
+  const gainHz = Math.abs(s.slip) * fieldRevPerSecond(s); // laps per real second
+  const period = Math.max(slowMo, 1) / gainHz;
+  const every = period >= 10 ? fmt(period) : fmt(period, 1);
+  return (
+    `<span class="tail">The <span class="w-field">field</span> has gained ` +
+    `${b(fmt(Math.abs(laps), Math.abs(laps) < 10 ? 2 : 1))} laps on the rotor: one lap every ${b(`${every} s`)}` +
+    `${slowMo > 1 ? ' (slowed)' : ''}.</span>`
+  );
+}
+
 /** Plain-text version for the aria-live region. */
 export function toPlainText(html: string): string {
   return html.replace(/<[^>]+>/g, '');

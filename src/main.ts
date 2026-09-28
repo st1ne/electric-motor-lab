@@ -28,6 +28,7 @@ import { createLights } from '@/scene/lights';
 import type { FrameContext, SceneModule } from '@/scene/module';
 import { createPost } from '@/scene/post';
 import { createRenderer, MAX_DPR } from '@/scene/renderer';
+import { createFieldFx } from '@/scene/fx/fieldFx';
 import { createRig } from '@/scene/rig';
 import { createViews } from '@/scene/views';
 import { createActions } from '@/state/actions';
@@ -81,6 +82,8 @@ modules.forEach((m) => scene.add(m.object3d));
 
 const views = createViews(driveRig);
 scene.add(views.object3d);
+const fieldFx = createFieldFx(driveRig, camera);
+modules.push(fieldFx);
 
 // ---- UI ----
 const actions = createActions(store, sim, cameraRig);
@@ -92,6 +95,11 @@ installHotkeys(store, actions, layout.panel.brake, devKeys);
 sim.onPresetEnded(() => store.set({ preset: 'none' }));
 sim.onLaunchTime((t) => layout.toast.show(`0–100 km/h in <strong>${fmt(t, 1)} s</strong>`));
 const dev = import.meta.env.DEV ? createDevOverlay(uiRoot) : null;
+declare global {
+  interface Window {
+    __lab?: unknown;
+  }
+}
 if (import.meta.env.DEV) {
   Object.assign(window, {
     __lab: {
@@ -128,7 +136,7 @@ let mechAngle = 0;
 let firstFrame = true;
 const ctx = { dt: 0, realTime: false, mechAngle: 0, spinBlur: 0 } as FrameContext;
 
-const loop = createRafLoop((dt) => {
+function frame(dt: number): void {
   const ui = store.get();
   inputs.motor = ui.motor;
   inputs.throttle = ui.throttle;
@@ -160,11 +168,21 @@ const loop = createRafLoop((dt) => {
   for (const m of modules) m.update(ctx);
   renderer.info.reset();
   post.render(dt);
-  layout.update(dt, snapshot, kin.slowMoLabel);
+  layout.update(dt, snapshot, kin.slowMoLabel, angles.lapsGained);
   dev?.frame(dt, renderer, snapshot, angles, kin.slowMoLabel);
   if (firstFrame) {
     firstFrame = false;
     layout.loader.done();
   }
-});
+}
+
+const loop = createRafLoop(frame);
 loop.start();
+if (import.meta.env.DEV) {
+  // step frames by hand (the loop pauses while the page is hidden)
+  Object.assign(window.__lab as object, {
+    tick: (dt = 1 / 60, n = 1) => {
+      for (let i = 0; i < n; i++) frame(dt);
+    },
+  });
+}

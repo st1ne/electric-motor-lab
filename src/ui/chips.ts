@@ -36,7 +36,7 @@ export function createChips(actions: Actions): HTMLElement {
       );
       b.addEventListener('click', () => {
         actions.flyTo(c.cam);
-        if (c.follow) actions.setFollow(c.follow);
+        if (c.follow) actions.setFollow(c.follow, true);
         if (c.view) actions.setView(c.view);
       });
       return b;

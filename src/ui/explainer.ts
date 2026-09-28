@@ -5,7 +5,7 @@
 import type { Regime } from '@/physics/regime';
 import type { SimSnapshot } from '@/physics/types';
 import { h, setHtml, setText } from '@/ui/dom';
-import { renderSlowMoTail, renderTemplate, toPlainText } from '@/ui/templates';
+import { renderLapCounter, renderSlowMoTail, renderTemplate, toPlainText } from '@/ui/templates';
 
 const RENDER_S = 0.15;
 const LIVE_S = 2;
@@ -25,7 +25,7 @@ const TITLES: Record<Regime, string> = {
 
 export interface Explainer {
   readonly el: HTMLElement;
-  update(dt: number, s: SimSnapshot, slowMo: number): void;
+  update(dt: number, s: SimSnapshot, slowMo: number, laps: number): void;
 }
 
 export function createExplainer(): Explainer {
@@ -46,7 +46,7 @@ export function createExplainer(): Explainer {
   let liveText = '';
   return {
     el,
-    update(dt, s, slowMo) {
+    update(dt, s, slowMo, laps) {
       t += dt;
       tLive += dt;
       if (t < RENDER_S) return;
@@ -55,7 +55,10 @@ export function createExplainer(): Explainer {
       el.dataset.regime = s.regime;
       setText(title, TITLES[s.regime]);
       setHtml(body, html);
-      setHtml(tail, renderSlowMoTail(s, slowMo));
+      setHtml(
+        tail,
+        [renderLapCounter(s, slowMo, laps), renderSlowMoTail(s, slowMo)].filter(Boolean).join(' '),
+      );
       const plain = toPlainText(html);
       if (tLive >= LIVE_S && plain !== liveText) {
         tLive = 0;

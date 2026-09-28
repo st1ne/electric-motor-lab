@@ -24,7 +24,7 @@ export interface Layout {
   readonly loader: Loader;
   /** the left column, where the chart card mounts in Phase 10 */
   readonly column: HTMLElement;
-  update(dt: number, s: SimSnapshot, slowMoLabel: number): void;
+  update(dt: number, s: SimSnapshot, slowMoLabel: number, laps: number): void;
 }
 
 export function createLayout(root: HTMLElement, store: Store<UiState>, actions: Actions): Layout {
@@ -76,10 +76,10 @@ export function createLayout(root: HTMLElement, store: Store<UiState>, actions: 
     toast,
     loader,
     column,
-    update(dt, s, slowMoLabel) {
+    update(dt, s, slowMoLabel, laps) {
       panel.update(dt, s, slowMoLabel);
       stats.update(dt, s);
-      explainer.update(dt, s, slowMoLabel);
+      explainer.update(dt, s, slowMoLabel, laps);
     },
   };
 }

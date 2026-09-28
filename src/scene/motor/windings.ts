@@ -18,7 +18,9 @@ import {
   InstancedMesh,
   Matrix4,
   Mesh,
+  MeshBasicMaterial,
   MeshStandardMaterial,
+  SphereGeometry,
   TubeGeometry,
   Vector3,
   type BufferGeometry,
@@ -175,6 +177,34 @@ export function createWindings(leadTargets: readonly Vector3[] = []): Windings {
     group.add(lead);
   });
 
+  // current particles on the crown end turns (§6.6): one dot per crown arc, moving along it in
+  // the direction of the phase current (reversed for the hairpins that start in a "−" slot)
+  const particleGeo = new SphereGeometry(0.0022, 8, 6);
+  const particles: { mesh: InstancedMesh; mat: MeshBasicMaterial; slots: number[]; t: number[] }[] =
+    [];
+  for (let ph = 0; ph < 3; ph++) {
+    const slots: number[] = [];
+    for (let k = 0; k < G.slots; k++) if (slotPhase(k).phase === ph) slots.push(k);
+    const mat = new MeshBasicMaterial({
+      color: new Color(PHASE_COLORS[ph]),
+      transparent: true,
+      depthWrite: false,
+      toneMapped: false,
+    });
+    const mesh = new InstancedMesh(particleGeo, mat, slots.length * 2);
+    mesh.frustumCulled = false;
+    group.add(mesh);
+    particles.push({
+      mesh,
+      mat,
+      slots,
+      t: slots.flatMap((_, i) => [(i * 0.37) % 1, (i * 0.37 + 0.5) % 1]),
+    });
+  }
+  const pm = new Matrix4();
+  const phiB = SPAN * SLOT_PITCH;
+  let lastT = 0;
+
   return {
     object3d: group,
     materials,
@@ -193,6 +223,36 @@ export function createWindings(leadTargets: readonly Vector3[] = []): Windings {
         const inst = Math.abs(currents[ph] ?? 0);
         const i = onlyA && ph > 0 ? 0 : inst + (iAvg - inst) * avg;
         mat.emissiveIntensity = GLOW_BASE + GLOW_MAX * Math.min(i / iMax, 1.2);
+      });
+
+      const dtd = Math.max(a.tDisplay - lastT, 0);
+      lastT = a.tDisplay;
+      const show = (1 - avg) * (ctx.ui.follow === 'field' ? 1 : ctx.ui.follow === 'all' ? 0.6 : 0);
+      particles.forEach((pt, ph) => {
+        const cur = onlyA && ph > 0 ? 0 : (currents[ph] ?? 0);
+        const level = Math.min(Math.abs(cur) / iMax, 1);
+        pt.mesh.visible = show > 0.01;
+        if (!pt.mesh.visible) return;
+        pt.mat.opacity = show * (0.15 + 0.85 * Math.min(level * 3, 1));
+        pt.slots.forEach((k, i) => {
+          const dir = slotPhase(k).sign * Math.sign(cur);
+          for (let layer = 0; layer < 2; layer++) {
+            const idx = i * 2 + layer;
+            let t = (pt.t[idx] ?? 0) + dir * dtd * (0.4 + 2.2 * level);
+            t -= Math.floor(t);
+            pt.t[idx] = t;
+            const r0 = layerRadius(layer === 0 ? 1 : 3);
+            const r1 = layerRadius(layer === 0 ? 2 : 4);
+            const reach = layer === 0 ? G.endTurnReach : G.endTurnReach * 0.82;
+            const bulge = Math.sin(Math.PI * t);
+            const x = -HALF_L - 0.005 - reach * bulge + 0.005 * bulge;
+            const r = r0 + (r1 - r0) * t + 0.004 * bulge + 0.0025;
+            const phi = slotAngle(k) + phiB * t;
+            pm.makeTranslation(x, r * Math.cos(phi), r * Math.sin(phi));
+            pt.mesh.setMatrixAt(idx, pm);
+          }
+        });
+        pt.mesh.instanceMatrix.needsUpdate = true;
       });
     },
     dispose: () => disposeTree(group),

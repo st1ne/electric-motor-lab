@@ -33,7 +33,8 @@ export interface UiState {
 
 export function defaultUiState(): UiState {
   return {
-    follow: 'all',
+    // §19: default Cutaway + Field + Auto slow-mo, so the rotating field shows without a click
+    follow: 'field',
     view: 'cutaway',
     motor: 'pm',
     preset: 'cruise',

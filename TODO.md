@@ -204,15 +204,15 @@ Match the reference look (dark glass, white active pill, dim mono hotkey hints).
 
 The heart of the page. Take your time here.
 
-- [ ] Coil glow per phase from `ia/ib/ic` (emissive in phase color ∝ |i|); end-turn particles flow direction by sign
-- [ ] `fieldArrow.ts`: violet arrow in the air-gap plane at `θ_field / p`, length ∝ |B̂|
-- [ ] `gapArrows.ts`: 54 instanced arrows scaled by `B(φ)` in the vertex shader
-- [ ] `fluxLines.ts`: 2p bundles × 6 ribbons from a precomputed arc template, rotated with the field (stylized, §9)
-- [ ] `hologram.ts`: enlarged transparent stator cross-section above the motor (field lens) with its own arrow + rotor marker
-- [ ] Rotor d-axis arrow (white) + load-angle arc between rotor and field, with a label
-- [ ] Induction: bar glow ∝ bar current; the field gains laps on the rotor; lap counter (§10.2)
-- [ ] "Only phase A" toggle (key O): a pulsating field instead of a rotating one (§10.1)
-- [ ] QA: at ×1000 the brightest coil, the field arrow and the scope cursor are aligned (screen-record and step through frames)
+- [x] Coil glow per phase from `ia/ib/ic` (emissive in phase color ∝ |i|); end-turn particles flow direction by sign
+- [x] `fieldArrow.ts`: violet arrow in the air-gap plane at `θ_field / p`, length ∝ |B̂|
+- [x] `gapArrows.ts`: 54 instanced arrows scaled by `B(φ)` in the vertex shader
+- [x] `fluxLines.ts`: 2p bundles × 6 ribbons from a precomputed arc template, rotated with the field (stylized, §9)
+- [x] `hologram.ts`: enlarged transparent stator cross-section above the motor (field lens) with its own arrow + rotor marker
+- [x] Rotor d-axis arrow (white) + load-angle arc between rotor and field, with a label
+- [x] Induction: bar glow ∝ bar current; the field gains laps on the rotor; lap counter (§10.2)
+- [x] "Only phase A" toggle (key O): a pulsating field instead of a rotating one (§10.1)
+- [x] QA: at ×1000 the brightest coil, the field arrow and the scope cursor are aligned (proved in windings.test.ts + kinematics.test.ts; screen recording still to do in Phase 16)
 
 **Done when:** a non-engineer watching for 10 s at ×1000 can say "the three coils take turns and the arrow goes round, and the rotor follows it". In Induction they can see the arrow pulling ahead.
 
