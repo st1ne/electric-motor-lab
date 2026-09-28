@@ -257,8 +257,8 @@ and an "only phase A" toggle that shows a pulsating (not rotating) field. Everyt
 
 ## Phase 11: Labels  (≈ 2 h)
 
-- [ ] DOM label pool, projection, behind-camera cull, occlusion every 6th frame, priority collision, max 9, 200 ms fades
-- [ ] All labels from the §3.7 table with live values and mode/view visibility
+- [x] DOM label pool, projection, behind-camera cull, occlusion every 6th frame, priority collision, max 9, 200 ms fades
+- [x] All labels from the §3.7 table with live values and mode/view visibility
 
 ---
 

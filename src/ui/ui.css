@@ -627,6 +627,98 @@
   display: none;
 }
 
+/* ---- 3D-pinned labels (§3.7) ---- */
+.labels {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none !important;
+}
+.label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  padding: 4px 9px 4px 0;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease-out);
+  will-change: transform, opacity;
+}
+.label.on {
+  opacity: 1;
+}
+.label i {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tone);
+  box-shadow:
+    0 0 0 2px rgba(8, 10, 18, 0.8),
+    0 0 8px var(--tone);
+}
+.label b,
+.label span {
+  background: rgba(8, 10, 18, 0.78);
+  border: 1px solid var(--panel-border);
+  line-height: 1;
+  padding: 4px 7px;
+}
+.label b {
+  margin-left: 6px;
+  border-right: 0;
+  border-radius: 99px 0 0 99px;
+  padding-left: 9px;
+  font: 600 11px/1 var(--font-ui);
+  color: var(--text);
+}
+.label span {
+  border-left: 0;
+  border-radius: 0 99px 99px 0;
+  padding-left: 0;
+  padding-right: 9px;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.label.flip {
+  padding: 4px 0 4px 9px;
+}
+/* flipped: the pill sits left of its anchor, so the dot moves to the right end */
+.label.flip i {
+  order: 3;
+  margin-left: 6px;
+}
+.label.flip b {
+  margin-left: 0;
+}
+.tone-field {
+  --tone: var(--field);
+}
+.tone-phase-a {
+  --tone: var(--phase-a);
+}
+.tone-phase-b {
+  --tone: var(--phase-b);
+}
+.tone-phase-c {
+  --tone: var(--phase-c);
+}
+.tone-power {
+  --tone: var(--power);
+}
+.tone-regen {
+  --tone: var(--regen);
+}
+.tone-heat {
+  --tone: var(--heat);
+}
+.tone-structure {
+  --tone: #cfd6e4;
+}
+
 /* ---- responsive (§15; the full mobile bottom sheet lands in Phase 15) ---- */
 @media (max-width: 1279px) {
   .left-col {

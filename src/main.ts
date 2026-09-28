@@ -24,6 +24,8 @@ import { createProps } from '@/scene/environment/props';
 import { createRoom } from '@/scene/environment/room';
 import { createRuler } from '@/scene/environment/ruler';
 import { createScopeScreens } from '@/scene/environment/scopeScreens';
+import { createLabelDefs } from '@/scene/labelDefs';
+import { createLabels } from '@/scene/labels';
 import { createLights } from '@/scene/lights';
 import type { FrameContext, SceneModule } from '@/scene/module';
 import { createPost } from '@/scene/post';
@@ -103,6 +105,8 @@ layout.column.append(chartCard.el);
 const screens = createScopeScreens(chartCard.views);
 scene.add(screens.object3d);
 modules.push(screens);
+const labelDefs = createLabelDefs(driveRig);
+const labels = createLabels(uiRoot, camera, labelDefs.specs, labelDefs.proxies);
 const devKeys: Record<string, () => void> = import.meta.env.DEV
   ? { b: () => store.set({ debugHousing: !store.get().debugHousing }) }
   : {};
@@ -130,6 +134,8 @@ if (import.meta.env.DEV) {
       actions,
       driveRig,
       maps,
+      labels,
+      chartCard,
     },
   });
 }
@@ -183,6 +189,7 @@ function frame(dt: number): void {
   views.update(ctx);
   cameraRig.update(dt);
   for (const m of modules) m.update(ctx);
+  labels.update(ctx);
   renderer.info.reset();
   post.render(dt);
   layout.update(dt, snapshot, kin.slowMoLabel, angles.lapsGained);
